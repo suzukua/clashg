@@ -39,6 +39,9 @@ get_status(){
   else
     clash_status="${clash_status}启动状态:正常(pid>${clashpid})"
   fi
+  if [ ! -f "$clash_file" ]; then
+    clash_status="${clash_status}-clash.yaml:不存在"
+  fi
 
   iptables_status="iptables="
   iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -E -c "$dnsmasq_gfw_ipset|$gfw_cidr_ipset")
@@ -46,6 +49,11 @@ get_status(){
     iptables_status="${iptables_status}状态:不正常(${iptables_count}条)"
   else
     iptables_status="${iptables_status}状态:正常(${iptables_count}条)"
+  fi
+  if [ -f "$clash_file" ]; then
+    it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$mixedport")
+    it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$mixedport")
+    iptables_status="${iptables_status}-mixedport:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
   fi
 
   ipset_status="ipset分流规则="

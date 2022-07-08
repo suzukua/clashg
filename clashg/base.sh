@@ -21,6 +21,9 @@ gfw_cidr_ipset="gfw_cidr"
 gfw_file=/tmp/clashg_gfw.conf
 ipcidr_file=/tmp/clashg_cidr_tmp.txt
 
+mixedport=$(cat $clash_file | awk -F: '/^mixed-port/{print $2}' | xargs echo -n)
+proxy_port=$(cat $clash_file | awk -F: '/^redir-port/{print $2}' | xargs echo -n)
+
 LOGGER() {
     echo -e "$(date +'%Y年%m月%d日%H:%M:%S'): $@"
 }

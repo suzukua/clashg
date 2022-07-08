@@ -25,10 +25,6 @@ unset_lock() {
 #	[ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/clashg/clashconfig.sh /koolshare/init.d/N99clashg.sh
 #}
 
-
-mixedport=$(cat $clash_file | awk -F: '/^mixed-port/{print $2}' | xargs echo -n)
-proxy_port=$(cat $clash_file | awk -F: '/^redir-port/{print $2}' | xargs echo -n)
-
 add_nat(){
   if [ "${clashg_mixed_port_status}" == "on" ]; then
     LOGGER "开启mixed-port: ${mixedport}公网访问" >> $LOG_FILE
