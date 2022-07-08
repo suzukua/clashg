@@ -12,6 +12,8 @@ jobs:
         
       - name: build
         run: |
+           rm -rf .git
+           cd ..
            tar zcf clashg.tar.gz clashg
       - name: upload github actions
         uses: actions/upload-artifact@v3
