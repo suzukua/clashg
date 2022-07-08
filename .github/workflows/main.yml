@@ -22,6 +22,10 @@ jobs:
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          tag: alpha
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: TODO New Release.
+          draft: false
+          prerelease: false
           files: ~/work/clashg/clashg.tar.gz
           generate_release_notes: true           
