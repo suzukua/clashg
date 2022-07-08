@@ -31,5 +31,5 @@ jobs:
           git checkout -b release
           git add .
           git commit -m "release"
-          git remote add hidden "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git remote add release "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
           git push -f release release     
