@@ -20,9 +20,9 @@ jobs:
            ls -lah
            echo "${GITHUB_ACTION_PATH}"
            echo ~
-      - name: upload github actions
-        uses: actions/upload-artifact@v3
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: clashg.tar.gz
-          path: ~/work/clashg/clashg.tar.gz
-          if-no-files-found: error
+          tag: ${{ github.ref }}
+          files: ~/work/clashg/clashg.tar.gz
+          generate_release_notes: true           
