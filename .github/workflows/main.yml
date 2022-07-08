@@ -19,6 +19,7 @@ jobs:
            ls -lah
            echo "${GITHUB_ACTION_PATH}"
            echo ~
+           echo ls -lah ~/work/clashg/clashg.tar.gz
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
