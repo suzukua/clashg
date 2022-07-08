@@ -19,14 +19,9 @@ jobs:
            ls -lah
            echo "${GITHUB_ACTION_PATH}"
            echo ~
-      - name: Tag
-#         if: startsWith(github.ref, 'refs/heads/release/')
-        run: |
-          git tag "v$env:GitVersion_SemVer"
-          git push origin "v$env:GitVersion_SemVer"
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          tag: ${{ github.ref }}
+          tag: alpha
           files: ~/work/clashg/clashg.tar.gz
           generate_release_notes: true           
