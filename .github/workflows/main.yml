@@ -13,9 +13,8 @@ jobs:
       - name: build
         run: |
            ls -lah
-           rm -rf .git
            cd ..
-           tar zcf clashg.tar.gz clashg
+           tar zcf clashg.tar.gz –exclude=.git clashg
            pwd
            ls -lah
            echo "${GITHUB_ACTION_PATH}"
