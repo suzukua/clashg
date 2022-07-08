@@ -12,6 +12,7 @@ jobs:
         
       - name: build
         run: |
+           ls -lah
            rm -rf .git
            cd ..
            tar zcf clashg.tar.gz clashg
@@ -21,5 +22,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: clashg.tar.gz
-          path: ../clashg.tar.gz
+          path: clashg.tar.gz
           if-no-files-found: error
