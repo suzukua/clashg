@@ -18,7 +18,7 @@ jobs:
            tar zcf clashg.tar.gz clashg
            pwd
            ls -lah
-           echo "${{GITHUB_ACTION_PATH}}"
+           echo "${GITHUB_ACTION_PATH}"
       - name: upload github actions
         uses: actions/upload-artifact@v3
         with:
