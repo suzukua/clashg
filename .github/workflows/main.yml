@@ -12,13 +12,14 @@ jobs:
         
       - name: build
         run: |
+           mkdir /home/runner/work/publish/
            ls -lah
            cd ..
            tar -zcf clashg.tar.gz --exclude=clashg/.git --exclude=clashg/.github clashg
            pwd
            ls -lah
            echo ~
-           echo ls -lah ~/work/clashg/clashg.tar.gz
+           ls -lah ~/work/clashg/clashg.tar.gz
            mv ~/work/clashg/clashg.tar.gz /home/runner/work/publish/
            
       - name: release
