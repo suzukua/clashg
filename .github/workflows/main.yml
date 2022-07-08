@@ -2,6 +2,9 @@ name: 构建
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+    - main
 
 jobs:
   build:
