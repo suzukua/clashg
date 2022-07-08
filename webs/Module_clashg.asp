@@ -159,7 +159,6 @@
 
         function getStatus(){
             $j("tr[js_add]").remove()
-            // clashg_status_tr
             apply_action("get_status", 2, function(data){
                 if(data){
                     //#返回clash=key:value-key:value;gfw=key:value-key:value
