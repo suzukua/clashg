@@ -1,0 +1,28 @@
+name: 构建
+
+on:
+  workflow_dispatch:
+#   push:
+#     branches:
+#       - master
+#     paths:
+#       - "docker/**"
+#       - "**.sh"
+#       - "**.json"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        
+      - name: build
+        run: |
+           tar zcf clashg.tar.gz clashg
+      - name: upload github actions
+        uses: actions/upload-artifact@v3
+        with:
+          name: dsm-${{matrix.platform}}-${{matrix.version}}
+          path: clashg.tar.gz
+          if-no-files-found: error
