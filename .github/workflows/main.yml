@@ -2,13 +2,6 @@ name: 构建
 
 on:
   workflow_dispatch:
-#   push:
-#     branches:
-#       - master
-#     paths:
-#       - "docker/**"
-#       - "**.sh"
-#       - "**.json"
 
 jobs:
   build:
@@ -23,6 +16,6 @@ jobs:
       - name: upload github actions
         uses: actions/upload-artifact@v3
         with:
-          name: dsm-${{matrix.platform}}-${{matrix.version}}
+          name: clashg.tar.gz
           path: clashg.tar.gz
           if-no-files-found: error
