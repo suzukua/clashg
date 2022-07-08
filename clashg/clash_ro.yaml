@@ -1,0 +1,52 @@
+port: 3333
+mixed-port: 23456
+#代理用户名密码
+authentication:
+  - "home:abc123"
+redir-port: 23457
+allow-lan: true
+mode: Rule
+log-level: error
+external-controller: 192.168.100.1:9990
+#external-ui: dashboard
+experimental:
+  ignore-resolve-fail: true
+secret: "clash"
+profile:
+  store-selected: false
+ipv6: false
+routing-mark: 255
+
+dns:
+  enable: true
+  ipv6: false
+  listen: :23453
+  default-nameserver:
+    - 61.139.2.69
+    - 218.6.200.139
+    - "[240e:56:4000:8000::69]:53"
+    - "[240e:56:4000::218]:53"
+  enhanced-mode: redir-host
+  nameserver:
+    - quic://i.passcloud.xyz:784
+    - tcp://208.67.222.222:443
+    - tls://dns.google
+
+#tproxy: true
+#tproxy-port: 23458
+
+sniffer:
+  enable: true
+  sniffing:
+    - tls
+    - http
+  skip-domain:
+    - 'Mijia Cloud'
+    - 'dlg.io.mi.com'
+    - '+.apple.com'
+  port-whitelist:
+    - 80
+    - 443
+    - 8000-9000
+# force-domain:
+#   - '+'

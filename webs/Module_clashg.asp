@@ -1,0 +1,821 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:v>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <meta HTTP-EQUIV="Expires" CONTENT="-1">
+    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="icon" href="images/favicon.png">
+    <title>科学上网工具-ClashG(gfwlist分流)</title>
+    <link rel="stylesheet" type="text/css" href="index_style.css" />
+    <link rel="stylesheet" type="text/css" href="form_style.css" />
+    <link rel="stylesheet" type="text/css" href="usp_style.css" />
+    <link rel="stylesheet" type="text/css" href="css/element.css">
+    <link rel="stylesheet" type="text/css" href="res/softcenter.css">
+    <script type="text/javascript" src="/state.js"></script>
+    <script type="text/javascript" src="/popup.js"></script>
+    <script type="text/javascript" src="/help.js"></script>
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/general.js"></script>
+    <script type="text/javascript" language="JavaScript" src="/js/table/table.js"></script>
+    <script type="text/javascript" language="JavaScript" src="/client_function.js"></script>
+    <script type="text/javascript" src="/res/softcenter.js"></script>
+    <style type="text/css">
+        .clash_basic_info{
+            display: block;
+            text-align: left;
+            font-size: 13px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #clash_version_status {
+            display: table-cell;
+            width: 95%;
+        }
+
+        .switch_field {
+            display: table-cell;
+            float: left;
+        }
+
+        .blank_line {
+            margin-left: 0px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding-top: 5px;
+        }
+
+        .input_text {
+            width: 95%;
+            font-family: Courier New, Courier, mono;
+            background: #3b4c50;
+            color: #FFFFFF;
+        }
+
+
+        .apply_gen {
+            width: 95%;
+            margin-top: 0px;
+        }
+
+        .FormTable th {
+            text-align: right;
+            width: 25%;
+        }
+
+        .FormTable {
+            display: none;
+            width: 100%;
+            animation: fadeEffect 1s; /* Fading effect takes 1 second */
+        }
+
+        .tabs {
+            overflow: hidden;
+            border: 1px rgb(132, 132, 132);
+        }
+        button.tab.active {
+            background-color: #387387;
+        }
+
+        /* Go from zero to full opacity */
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        .copyToClipboard {
+            color: red !important;
+        }
+
+        td.hasButton {
+            text-align: center;
+        }
+
+        td {
+            text-align: left;
+        }
+
+        .wide_input {
+            width: 50%;
+        }
+
+        .hintstyle {
+            cursor: help;
+        }
+
+        .item-tab {
+            width: 80px;
+            border-radius: 5px;
+            margin: 1px !important;
+            padding: 2px !important;
+            color: rgb(0, 255, 8) !important;
+        }
+
+        .formfonttitle {
+            display: block;
+            text-align: left;
+        }
+
+        .softcenterRetBtn {
+            float: right;
+            cursor: pointer;
+            margin-top: -20px;
+            content: url('/images/backprev.png');
+        }
+
+        .softcenterRetBtn:hover {
+            content: url('/images/backprevclick.png');
+        }
+        </style>
+    <script type="text/javascript">
+        var dbus = {};
+        var _responseLen;
+        var noChange = 0;
+        var $j = jQuery.noConflict();
+
+        function init() {
+	        show_menu(menu_hook);
+            document.getElementById(localStorage.getItem('clashg_actived_tab') || "btn_default_tab").click();
+            get_dbus_data();
+        }
+        function menu_hook() {
+            tabtitle[tabtitle.length - 1] = new Array("", "MerlinClash", "__INHERIT__");
+            tablink[tablink.length - 1] = new Array("", "Module_clashg.asp",  "NULL");
+        }
+        function get_dbus_data() {
+            $j.ajax({
+                type: "GET",
+                url: "/_api/clashg",
+                async: false,
+                success: function(data) {
+                    dbus = data.result[0];
+                    conf2obj();
+                }
+            });
+        }
+
+        function getStatus(){
+            $j("tr[js_add]").remove()
+            // clashg_status_tr
+            apply_action("get_status", 2, function(data){
+                if(data){
+                    //#返回clash=key:value-key:value;gfw=key:value-key:value
+                    var statusGroups=data.split(";")
+                    for(let i = 0; i < statusGroups.length; i++) {
+                      var statusGroupName = statusGroups[i].split("=")[0]
+                      var th="<th><label>" + statusGroupName + "</label></th>"
+                      var statusItems = statusGroups[i].split("=")[1]
+                      var td = "<td></td>";
+                      if(statusItems){
+                          var statusItem = statusItems.split("-")
+                          var td = "<td>"
+                          for(let j = 0; j < statusItem.length; j++) {
+                            var statusKey = statusItem[j].split(":")[0]
+                            var statusVakye = statusItem[j].split(":")[1]
+                            td += statusKey + " : " + statusVakye + "<br>";
+                          }
+                          td += "</td>"
+                      }
+                      var tr = "<tr js_add>" + th + td + "</tr>"
+                      $j("#menu_default").append(tr);
+                    }
+                }
+            })
+        }
+
+        function conf2obj() {
+            E("clashg_enable").checked = (dbus["clashg_enable"] == 'on');
+            E("clashg_mixed_port_status").checked = (dbus["clashg_mixed_port_status"] == 'on');
+            E("clashg_subscribe_args").value = dbus["clashg_subscribe_args"] || "";
+            E("clashg_update_rule_sub_restart_cron").value = Base64.decode(dbus["clashg_update_rule_sub_restart_cron"] || "");
+            E("clashg_update_geoip_cron").value = Base64.decode(dbus["clashg_update_geoip_cron"] || "");
+        }
+
+        //提交任务方法,实时日志显示
+        // flag: 0:提交任务并查看日志，1:提交任务3秒后刷新页面, 2:提交任务后无特殊操作(可指定callback回调函数)
+        function post_dbus_data(script, arg, obj, flag, callback) {
+            if(flag == 0){
+                setTimeout(show_status, 200);
+            }
+            var id = parseInt(Math.random() * 100000000);
+            var postData = {
+                "id": id,
+                "method": script,
+                "params": [arg],
+                "fields": obj
+            };
+            $j("#loadingIcon").show();
+            $j.ajax({
+                type: "POST",
+                cache: false,
+                url: "/_api/",
+                data: JSON.stringify(postData),
+                dataType: "json",
+                success: function(response) {
+                    $j("#loadingIcon").hide();
+                    if (response.result == id) {
+                        if (response.status == "ok") {
+                            if (flag && flag == "0") {
+                                // 查看执行过程日志
+                                // show_status();
+                            } else if (flag && flag == "1") {
+                                // 页面刷新操作
+                                refreshpage(3);
+                            } else if (flag && flag == "2") {
+                                // 什么也不做...
+                            }
+                            // 动态获取数据模式: JSON数据保存在 response.data 变量中
+                            // data内部数据使用方式: resp_data.key1 , resp_data.key2 , resp_data.key3 ...
+                            var resp_data = response.data;
+                            if (callback) {
+                                setTimeout(function() {
+                                    callback(resp_data);
+                                }, 1000);
+                            }
+                        } else if (flag && flag == "1") {
+                            // 页面刷新操作
+                            refreshpage(3);
+                        } else if (flag && flag == "2") {
+                            //continue;
+                            if (callback) {
+                                setTimeout(function() {
+                                    callback();
+                                }, 1000);
+                            }
+                        } else {
+                            // show_status();
+                            if (callback) {
+                                setTimeout(function() {
+                                    callback();
+                                }, 1000);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // function test_res() {
+        //     apply_action("test_res")
+        // }
+        // 显示动态结果消息
+        function show_result(message, duration) {
+            if (!duration) duration = 1000;
+            $j('#copy_info').text(message);
+            $j('#copy_info').fadeIn(100);
+            $j('#copy_info').css('display', 'inline-block');
+            setTimeout(() => {
+                $j('#copy_info').fadeOut(1000);
+            }, duration);
+        }
+
+        function show_status() {
+            if(localStorage.getItem('clashg_actived_tab') != 'btn_log_tab'){
+                $j("#logMsg").show();//非日志tab才展示
+            }
+
+            $j.ajax({
+                url: '/_temp/clashglog.txt',
+                type: 'GET',
+                async: true,
+                cache: false,
+                dataType: 'text',
+                success: function(response) {
+                    var logBackup = E("clash_log_backup");
+                    logBackup.value = response.replace("XU6J03M6", " ");
+                    logBackup.scroll({ top: logBackup.scrollHeight, left: 0, behavior: "smooth" })
+                    if(localStorage.getItem('clashg_actived_tab') != 'btn_log_tab'){
+                        var logMsg = E("clash_log_msg");
+                        logMsg.value = logBackup.value;
+                        logMsg.scrollTop = logMsg.scrollHeight;
+                    }
+                    if (response.endsWith("XU6J03M6\n")) {
+                        return true;
+                    }
+                    if (_responseLen == response.length) {
+                        noChange++;
+                    }
+                    if (noChange <= 1000) {
+                        //重新加载
+                        setTimeout("show_status();", 500);
+                    }
+                    _responseLen = response.length;
+                },
+                error: function() {
+                    setTimeout("show_status();", 500);
+                }
+            });
+        }
+
+
+        function switch_tabs(evt, tab_id) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("FormTable");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tab_id).style.display = "inline-table";
+            evt.currentTarget.className += " active";
+            $j("#logMsg").hide();//切换关闭日志窗口
+            localStorage.setItem('clashg_actived_tab', evt.currentTarget.id);
+        }
+
+        function reload_Soft_Center() {
+            location.href = "/Module_Softcenter.asp";
+        }
+
+        /*********************主要功能逻辑模块实现**************/
+        // flag: 0:提交任务并查看日志，1:提交任务3秒后刷新页面, 2:提交任务后无特殊操作(可指定callback回调函数)
+        function apply_action(action, flag, callback, ret_data) {
+            if (!action) {
+                return;
+            }
+            // 如果只需要某个参数，就没必要提交所有dbus数据，参数传递过多也是会有速度影响的。
+            if (!ret_data) {
+                ret_data = dbus;
+            }
+            post_dbus_data("clashg_control.sh", action, ret_data, flag, callback);
+        }
+
+        function service_stop() {
+            apply_action("stop", "0", getStatus, {
+                "clashg_enable": dbus["clashg_enable"]
+            });
+        }
+
+        function service_start() {
+            // 由于 start 需要先确保执行成功后再返回执行结果,因此先设置等待状态图片显示，然后再执行 start 操作。
+            apply_action("start", "0", function(data) {
+                // 更新dbus数据中的 clashg_enable 状态 on/off
+                dbus = data;
+                conf2obj();
+                getStatus()
+            }, {
+                "clashg_enable": dbus["clashg_enable"]
+            });
+        }
+
+        function switch_service() {
+            if(!dbus['clashg_subscribe_args']){
+                show_result("请先在资源配置中订阅在操作")
+                document.getElementById('clashg_enable').checked = false
+                return false;
+            }
+            $j("#loadingIcon").show();
+            if (document.getElementById('clashg_enable').checked) {
+                dbus["clashg_enable"] = "on";
+                service_start();
+            } else {
+                dbus["clashg_enable"] = "off";
+                service_stop();
+            }
+        }
+        function switch_mixed_port_mode(){
+            if (document.getElementById('clashg_mixed_port_status').checked) {
+                dbus["clashg_mixed_port_status"] = "on";
+            } else {
+                dbus["clashg_mixed_port_status"] = "off";
+            }
+            apply_action("set_mixed_port_status", "2", null, {
+                "clashg_mixed_port_status": dbus["clashg_mixed_port_status"]
+            });
+        }
+        // function set_log_type() {
+        //     // 界面切换日志弹出框模式
+        //     if (dbus["clash_log_type"] == "on") {
+        //         //开启日志弹出框模式
+        //         $j("#logMsg").hide();
+        //         $j("#logBackup").show();
+        //     } else {
+        //         //关闭日志弹出框模式
+        //         $j("#logMsg").show();
+        //         $j("#logBackup").hide();
+        //     }
+        // }
+        //切换日志弹出框模式
+        // function switch_log_type() {
+        //     if (document.getElementById('clash_log_type').checked) {
+        //         dbus["clash_log_type"] = "on";
+        //     } else {
+        //         dbus["clash_log_type"] = "off";
+        //     }
+        //     apply_action("set_log_type", "2", set_log_type, {
+        //         "clash_log_type": dbus["clash_log_type"]
+        //     });
+        // }
+
+
+        function get_proc_status() { // 查看服务运行状态
+            apply_action("get_proc_status", "0", null, {});
+        }
+
+        function update_geoip() { // 更新GeoIP
+            // $j("#loadingIcon").show();
+            apply_action("update_geoip " + document.getElementById("clashg_geoip_url").value, "0", null);
+        }
+        function update_dns_ipset_rule(){
+            // $j("#loadingIcon").show();
+            apply_action("update_dns_ipset_rule", "0", null);
+        }
+        function subscribe(){
+            // $j("#loadingIcon").show();
+            dbus["clashg_subscribe_args"] = document.getElementById("clashg_subscribe_args").value
+            apply_action("subscribe", "0", null,{
+                "clashg_subscribe_args": dbus["clashg_subscribe_args"]
+            });
+        }
+
+        // function update_provider_file() { // 更新节点订阅源URL
+        //     dbus["clash_provider_file"] = Base64.encode(document.getElementById("clash_provider_file").value);
+        //     apply_action("update_provider_file", "0", null, {
+        //         "clash_provider_file": dbus["clash_provider_file"],
+        //     });
+        // }
+
+        // 更新 clash 新版本
+        function update_clash_bin() { // 按名称删除 DIY节点
+            apply_action("update_clash_bin");
+            document.getElementById("clash_install_show").style.display = "none";
+        }
+
+        // 忽略新版本提示
+        function ignore_new_version() {
+            // 3秒自动刷新页面
+            apply_action("ignore_new_version", "0", function(data) {
+                dbus["clashg_version"] = data["clashg_version"];
+                version_show();
+            }, {
+                "clash_new_version": dbus["clash_new_version"]
+            });
+        }
+
+        function show_router_info() {
+            apply_action("show_router_info", "0", null, {});
+        }
+
+        // 备份配置文件
+        function backup_config_file() {
+            apply_action("backup_config_file", "0", function() {
+                show_result("备份配置文件成功，请到下载本地目录查看");
+                window.location = "/_temp/clash_backup.tar.gz"
+            }, {});
+
+        }
+
+        // 恢复配置信息的压缩包文件
+        function reset_config_file() {
+            apply_action("reset_config_file", "2", function() {
+                show_result("重置配置文件成功!");
+                switch_edit_filecontent()//重新获取配置文件
+            });
+            // 设置readonly属性为true
+            $j("#clash_config_content").attr("readonly", true);
+        }
+
+        // 保存config文件内容
+        function save_config_content() {
+            var content = $j("#clash_config_content").val();
+            if (content == "") {
+                return false;
+            }
+            var base64_content = Base64.encode(content);
+            apply_action("save_config_file " + base64_content, "2", function() {
+                show_result("保存文件内容成功!");
+                switch_edit_filecontent()//重新获取配置文件
+            });
+            // 设置readonly属性为true
+            $j("#clash_config_content").attr("readonly", true);
+        }
+
+        // 编辑config文件内容
+        function edit_config_content() {
+            $j("#clash_config_content").attr("readonly", false);
+            $j("#clash_config_content").focus();
+            show_result("开始编辑文件!")
+        }
+
+
+        function set_edit_content(data) {
+             // 解码base64格式的 data.clash_edit_filecontent
+            var filecontent = Base64.decode(data);
+            if (filecontent == "") {
+                // 文件内容为空
+                console.log("文件内容为空");
+                return false;
+            }
+            // 设置当前textarea的内容为 file_content
+            $j("#clash_config_content").val(filecontent);
+            show_result("配置文件加载成功!", 1000);
+        }
+
+        function switch_edit_filecontent() {
+            // $j("#loadingIcon").show();
+            apply_action("get_config_file", "2", function(data){
+                set_edit_content(data)
+                // $j("#loadingIcon").hide();
+            });
+        }
+
+        function update_cron(cron_name){
+            var dbus_tmp={};
+            if(document.getElementById(cron_name).value){
+                dbus_tmp[cron_name] = Base64.encode(document.getElementById(cron_name).value);
+            } else {
+                dbus_tmp[cron_name] = ""
+            }
+            // $j("#loadingIcon").show();
+            apply_action("update_cron " + cron_name, "0", null, dbus_tmp);
+        }
+
+        function copyURI(evt) {
+            evt.preventDefault();
+            E("clashg_geoip_url").value=evt.target.getAttribute('href')
+        }
+    </script>
+</head>
+
+<body onload="init();">
+    <div id="TopBanner"></div>
+    <div id="Loading" class="popup_bg"></div>
+    <iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
+    <!-- 主要页面内容定义-->
+    <table class="content" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="17">&nbsp;</td>
+            <td valign="top" width="202">
+                <div id="mainMenu"></div>
+                <div id="subMenu"></div>
+            </td>
+            <td valign="top">
+                <div id="tabMenu" class="submenuBlock"></div>
+                <div class="apply_gen FormTitle">
+                    <div class="clash_top" style="padding-top: 20px;">
+                        <div class="formfonttitle" ><b>Clash</b>版科学上网工具
+                            <img id="return_btn" onclick="reload_Soft_Center();" class="softcenterRetBtn" title="返回软件中心""></img>
+                        </div>
+                    </div>
+                    <div class="clash_basic_info">
+                        <!--插件特点-->
+                        <p style="color: rgb(229, 254, 2);">
+                            <b><a style="color: rgb(0, 255, 60);font-size: 16px;" href="#">ClashG特性</a></b>:dnsmasq分流国外，对国内域名毫无影响，国外域名借助Meta Clash的sniff国外解析<br/>
+                        </p>
+                        <hr>
+                    </div>
+                    <!-- Tab菜单 -->
+                    <div class="tabs">
+                        <button id="btn_default_tab" class="tab" onclick="switch_tabs(event, 'menu_default');getStatus();">主面板</button>
+                        <button id="btn_config_tab" class="tab" onclick="switch_tabs(event, 'menu_config');switch_edit_filecontent();">在线编辑</button>
+                        <button id="btn_option_tab" class="tab" onclick="switch_tabs(event, 'menu_options');">资源配置</button>
+                        <button id="btn_log_tab" class="tab" onclick="switch_tabs(event, 'menu_log');show_status()">日志信息</button>
+<!--                        <button id="btn_help_tab" class="tab" onclick="switch_tabs(event, 'menu_help');">帮助信息</button>-->
+                    </div>
+
+                    <!-- 默认设置Tab -->
+                    <table id="menu_default" class="FormTable">
+                        <thead width="100%">
+                            <tr>
+                                <td colspan="2">ClashG - 设置面板</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <th>
+                                <label>开启ClashG服务</label>
+                            </th>
+                            <td colspan="2">
+                                <div class="switch_field">
+                                    <label for="clashg_enable">
+                                        <input id="clashg_enable" onclick="switch_service();" class="switch" type="checkbox" style="display: none;">
+                                        <div class="switch_container">
+                                            <div class="switch_bar"></div>
+                                            <div class="switch_circle transition_style"></div>
+                                        </div>
+                                    </label>
+                                </div>
+<!--                                <div id="clash_version_status">-->
+<!--                                    <i style="color:rgb(7, 234, 7)">当前版本：<% dbus_get_def("softcenter_module_clashg_version", "未知" ); %></i>-->
+<!--                                </div>-->
+
+<!--                                <div id="clash_install_show" style="display: none;">-->
+<!--                                    <a type="button" class="button_gen" onclick="ignore_new_version()" href="javascript:void(0);">忽略新版本</a> &nbsp;&nbsp;&nbsp;&nbsp;-->
+<!--                                    <a type="button" class="button_gen" onclick="update_clash_bin()" href="javascript:void(0);">更新最新版</a>-->
+<!--                                </div>-->
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 资源配置 -->
+                    <table id="menu_options" class="FormTable">
+                        <thead>
+                            <tr>
+                                <td colspan="2">ClashG - 资源配置</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <th>
+                                <label class="hintstyle" title="target=$clashtarget&new_name=true&url=$link&insert=false&config=${urlinilink}&include=$include&exclude=$exclude&append_type=$appendtype&emoji=$emoji&udp=$udp&fdn=$fdn&sort=$sort&scv=$scv&tfo=$tfo">订阅节点</label>
+                            </th>
+                            <td>
+                                <span style="text-align:left;">
+                                   参考subconverter参数
+                                </span>
+                                <br>
+                                <input style="width: 65%;" type="text" class="input_text" id="clashg_subscribe_args" placeholder="参考subconverter参数:target=clash&new_name=true&url=$link&config=${configlink}">
+                                <button type="button" class="button_gen" onclick="subscribe()" href="javascript:void(0);">订阅</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">gfw和ipcidr文件</label>
+                            </th>
+                            <td>
+                                预设gfw和ipcidr规则,暂不支持修改<a style="color:chartreuse" href="https://github.com/zhudan/gfwlist2dnsmasq" target="_blank" rel="noopener noreferrer">Github地址</a>
+                                 <button type="button" class="button_gen" onclick="update_dns_ipset_rule()" href="javascript:void(0);">更新</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">Country.mmdb文件</label>
+                            </th>
+                            <td>
+                                <span style="text-align:left;">
+                                    1. 全量GeoIP版本(6MB左右)<a class="copyToClipboard"  href="https://raw.githubusercontent.com/Dreamacro/maxmind-geoip/release/Country.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp;  <a style="color:chartreuse" href="https://github.com/Dreamacro/maxmind-geoip" target="_blank" rel="noopener noreferrer">Github地址</a> <br>
+                                    2. Loyalsoldier精简版(200KB左右，默认使用)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp;  <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a><br>
+                                    4. Loyalsoldier版(5MB左右)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp; <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a>
+                                </span>
+                                <input style="width: 65%;" type="text" class="input_text" id="clashg_geoip_url" placeholder="自定义GeoIP数据下载地址">
+                                <button type="button" class="button_gen" onclick="update_geoip()" href="javascript:void(0);">更新</button>
+                                <br>
+                                <input style="width: 65%;" type="text" class="input_text" id="clashg_update_geoip_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_geoip_cron')" href="javascript:void(0);">保存</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label title="定时更新并且重启" class="hintstyle">定时更新gfw、ipcidr、订阅并重启</label>
+                            </th>
+                            <td>
+                                <input style="width: 65%;" type="text" class="input_text" id="clashg_update_rule_sub_restart_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_rule_sub_restart_cron')" href="javascript:void(0);">保存</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label title="默认关闭，开放mixed-port公网访问(IPV4/IPV6)">公网开放mixed-port</label>
+                            </th>
+                            <td colspan="2">
+                                <div class="switch_field">
+                                    <label for="clashg_mixed_port_status">
+                                        <input id="clashg_mixed_port_status" onclick="switch_mixed_port_mode();" class="switch" type="checkbox" style="display: none;">
+                                        <div class="switch_container">
+                                            <div class="switch_bar"></div>
+                                            <div class="switch_circle transition_style"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--<tr>
+                            <th>
+                                <label title="默认关闭，如果有公网IPv6地址，可开启此选项。">支持IPv6模式</label>
+                            </th>
+                            <td colspan="2">
+                                <div class="switch_field">
+                                    <label for="clash_ipv6_mode">
+                                        <input id="clash_ipv6_mode" onclick="switch_ipv6_mode();" class="switch" type="checkbox" style="display: none;">
+                                        <div class="switch_container">
+                                            <div class="switch_bar"></div>
+                                            <div class="switch_circle transition_style"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <label>备份配置</label>
+                            </th>
+                            <td colspan="2">
+                                <input type="button" class="button_gen" onclick="backup_config_file();" value="开始备份">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label>恢复配置</label>
+                            </th>
+                            <td colspan="2">
+                                <input type="button" class="button_gen" onclick="restore_config_file();" value="开始恢复">
+                                <input style="color:#FFCC00;*color:#000;width: 200px;" id="restore_file" type="file" name="file">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label>上传<b>config.yaml</b>文件</label>
+                            </th>
+                            <td colspan="2">
+                                <input type="button" id="upload_btn" class="button_gen" onclick="upload_config_file();" value="开始上传">
+                                <input style="color:#FFCC00;*color:#000;width: 200px;" id="file" type="file" name="file">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <b>注意事项</b>:<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>1. 确保配置的Yaml格式正确性: </b>本插件会修改redir-port/dns.listen/external-controller/external-ui参数<br>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>2. 重要提醒: 修改前记得备份!!!</b><br/>
+                            </td>
+                        </tr>-->
+                    </table>
+                    <!-- 在线编辑配置文件内容 -->
+                    <table id="menu_config" class="FormTable">
+                        <thead>
+                            <tr>
+                                <td colspan="3">ClashG - 配置文件编辑 【保存并且重新订阅之后重启才生效】</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td colspan="2">
+                                <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
+                                <textarea id="clash_config_content" readonly="true" rows="20" class="input_text" style="width: 98%;" title="为了防止误编辑，默认为只读，点击编辑后才可修改哦！&#010;快捷键Ctrl+S: 保存.&#010;快捷键Ctrl+E: 编辑.&#010;快捷键Ctrl+R: 重新加载。"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a type="button" class="button_gen" onclick="edit_config_content()" href="javascript:void(0);">编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a type="button" class="button_gen" onclick="save_config_content()" href="javascript:void(0);">保存</a>
+                                <a type="button" class="button_gen" onclick="reset_config_file()" href="javascript:void(0);">恢复安装时刻配置</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 帮助信息
+                    <table id="menu_help" class="FormTable">
+                        <thead>
+                            <tr>
+                                <td>vClash - 使用帮助</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td>
+                                <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">使用说明：</p>
+                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">1. 个人节点添加</b>:在“节点管理”>"更新DIY组"添加，一次添加不再更新。</p>
+                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">2. 订阅节点添加</b>:在"节点管理">"PROXY组"添加，每小时更新一次。</p>
+                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. 插件的兼容性</b>: 透明代理模式时会与<b style="color: rgb(32, 252, 32);">其他代理插件冲突</b> ，使用前要关闭其他透明代理插件。</p>
+                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">4. 学习配置规则</b>: 核心配置为clash的启动配置文件,请阅读<a target="_blank" href="https://github.com/Dreamacro/clash/wiki/configuration">官方配置说明文档</a></p>
+                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">5. 学习插件用法</b>: 可阅读<a target="_blank" href="https://github.com/learnhard-cn/vClash/wiki">vClash项目wiki页面</a></p>
+                            </td>
+                        </tr>
+                    </table> -->
+                    <table id="menu_log" class="FormTable">
+                        <thead>
+                            <tr>
+                                <td colspan="2">ClashG - 日志</td>
+                            </tr>
+                        </thead>
+                        <tr id="logBackup">
+                            <td colspan="2">
+                                <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">日志信息</p>
+                                <textarea rows="20 " wrap="off" readonly="readonly" id="clash_log_backup" class="input_text"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    <!--打开 Clash控制面板-->
+                    <div id="status_tools " style="margin-top: 25px; padding-bottom: 20px;">
+<!--                        <a type="button" class="button_gen debug" onclick="test_res(); " href="javascript:void(0); ">Test按钮</a> &nbsp;&nbsp;&nbsp;-->
+<!--                        <a type="button" class="button_gen" onclick="get_proc_status(); " href="javascript:void(0); ">状态检查</a> &nbsp;&nbsp;&nbsp;-->
+<!--                        <a type="button" class="button_gen" onclick="show_router_info(); " href="javascript:void(0); ">路由信息</a> &nbsp;&nbsp;&nbsp;-->
+                        <a type="button" class="button_gen" id="clash_yacd_ui" href="http://clash.metacubex.one/" target="_blank">metacubex控制面板</a>
+                    </div>
+
+                    <div>
+                        <div style="height: 60px;margin-top:10px; ">
+                            <div><img id="loadingIcon" style="display:none; " src="/images/loading.gif"></div>
+                            <!-- 显示动态消息 -->
+                            <label id="copy_info" style="display: none;color:#ffc800;font-size: 24px; "></label>
+                        </div>
+                    </div>
+
+                    <div id="logMsg" style="display: none;">
+                        <div>显示日志信息</div>
+                        <textarea rows="20 " wrap="off" readonly="readonly" id="clash_log_msg" class="input_text"></textarea>
+                    </div>
+
+                </div>
+            </td>
+            <div class="author-info"></div>
+        </tr>
+    </table>
+    <div id="footer"></div>
+</body>
+</html>
