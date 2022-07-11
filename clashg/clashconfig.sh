@@ -32,19 +32,38 @@ add_nat(){
     ip6tables -I INPUT -p tcp --dport $mixedport -j ACCEPT
   fi
   #匹配gfwlist中ip的nat流量均被转发到clash端口
-  iptables -t nat -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
-  iptables -t nat -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
+#  iptables -t nat -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
+#  iptables -t nat -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
+## tproxy模式
+  ip rule add fwmark 10 table 100
+  ip -f inet route add local 0.0.0.0/0 dev lo table 100
+  iptables -t mangle -I PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -I PREROUTING -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -I PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -I PREROUTING -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
 	LOGGER 删除iptables开始 >> $LOG_FILE
-	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${dnsmasq_gfw_ipset}/=")
+#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${dnsmasq_gfw_ipset}/=")
+#  for ipset_index in $ipset_indexs; do
+#    iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
+#  done
+#  ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${gfw_cidr_ipset}/=")
+#	for ipset_index in $ipset_indexs; do
+#		iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
+#	done
+
+  #tproxy模式
+  ip rule del fwmark 10 table 100
+  ip route del local 0.0.0.0/0 dev lo table 100
+	ipset_indexs=$(iptables -t mangle -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${dnsmasq_gfw_ipset}/=")
   for ipset_index in $ipset_indexs; do
     iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
   done
-  ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${gfw_cidr_ipset}/=")
+  ipset_indexs=$(iptables -t mangle -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${gfw_cidr_ipset}/=")
 	for ipset_index in $ipset_indexs; do
 		iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
 	done
@@ -52,11 +71,11 @@ rm_nat(){
 	# 清理mixedport端口
 	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
 	for ipset_index in $ipset_indexs; do
-		iptables -D INPUT -p tcp --dport $mixedport -j ACCEPT >/dev/null 2>&1
+		iptables -D INPUT $ipset_index >/dev/null 2>&1
 	done
 	ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
 	for ipset_index in $ipset_indexs; do
-		ip6tables -D INPUT -p tcp --dport $mixedport -j ACCEPT >/dev/null 2>&1
+		ip6tables -D INPUT $ipset_index >/dev/null 2>&1
 	done
 	LOGGER 删除iptables完成 >> $LOG_FILE
 }

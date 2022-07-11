@@ -15,7 +15,7 @@ secret: "clash"
 profile:
   store-selected: false
 ipv6: false
-routing-mark: 255
+#routing-mark: 255
 
 dns:
   enable: true
@@ -32,8 +32,8 @@ dns:
     - tcp://208.67.222.222:443
     - tls://dns.google
 
-#tproxy: true
-#tproxy-port: 23458
+tproxy: true
+tproxy-port: 23458
 
 sniffer:
   enable: true
