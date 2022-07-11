@@ -20,7 +20,7 @@ unset_lock() {
 }
 
 auto_start() {
-	LOGGER "创建开自启动"
+	LOGGER "判断是否创建开自启动"
 	[ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/S99clashg.sh
 	[ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/N99clashg.sh
 }
@@ -275,6 +275,7 @@ apply() {
 	LOGGER --------------------- 创建相关分流相关配置 开始------------------------ >> $LOG_FILE
 	prepare_start
 	LOGGER --------------------- 创建相关分流相关配置 结束------------------------ >> $LOG_FILE
+	auto_start
 	LOGGER "" >> $LOG_FILE
 
   LOGGER "" >> $LOG_FILE
