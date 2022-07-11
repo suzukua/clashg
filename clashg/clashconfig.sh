@@ -47,7 +47,7 @@ rm_nat(){
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
 	LOGGER 删除iptables开始 >> $LOG_FILE
-#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${$proxy_port}/=")
+#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=")
 #  for ipset_index in $ipset_indexs; do
 #    iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
 #  done
