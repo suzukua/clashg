@@ -44,7 +44,7 @@ get_status(){
   fi
 
   iptables_status="iptables="
-  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -E -c "$dnsmasq_gfw_ipset|$gfw_cidr_ipset")
+  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$tproxy_port")
   if [ "$iptables_count" -ne "4" ]; then
     iptables_status="${iptables_status}状态:不正常(${iptables_count}条)"
   else

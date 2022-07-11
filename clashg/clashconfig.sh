@@ -305,7 +305,7 @@ apply() {
 }
 
 case $ACTION in
-start)
+start|start_nat)
   LOGGER "开始启动ClashG" >> $LOG_FILE
 	apply
 	LOGGER "启动ClashG完成" >> $LOG_FILE
@@ -316,24 +316,6 @@ restart)
 	start_clash
 	LOGGER "重启ClashG完成" >> $LOG_FILE
 	;;
-start_nat)
-  set_lock
-  LOGGER "start_nat 网络发生变化，重新初始化网络" >> $LOG_FILE
-  #初始化iptables，防止重复数据写入
-  LOGGER --------------------- 清除iptables+ipset规则 开始------------------------ >> $LOG_FILE
-  rm_nat
-  rm_ipset
-  LOGGER --------------------- 清除iptables+ipset规则 结束------------------------ >> $LOG_FILE
-  LOGGER ""
-  LOGGER --------------------- 创建相关iptables+ipset集 开始------------------------ >> $LOG_FILE
-  add_ipset
-  add_nat
-  restart_dnsmasq
-  LOGGER --------------------- 创建相关iptables+ipset集 结束------------------------ >> $LOG_FILE
-  LOGGER "" >> $LOG_FILE
-  LOGGER "============= ClashG start_nat完成=============" >> $LOG_FILE
-  unset_lock
-  ;;
 stop)
 	set_lock
 	prepare_stop
