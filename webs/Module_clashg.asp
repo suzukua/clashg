@@ -31,21 +31,9 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        #clash_version_status {
-            display: table-cell;
-            width: 95%;
-        }
-
         .switch_field {
             display: table-cell;
             float: left;
-        }
-
-        .blank_line {
-            margin-left: 0px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding-top: 5px;
         }
 
         .input_text {
@@ -55,15 +43,9 @@
             color: #FFFFFF;
         }
 
-
         .apply_gen {
             width: 95%;
             margin-top: 0px;
-        }
-
-        .FormTable th {
-            text-align: right;
-            width: 25%;
         }
 
         .FormTable {
@@ -98,20 +80,8 @@
             text-align: left;
         }
 
-        .wide_input {
-            width: 50%;
-        }
-
         .hintstyle {
             cursor: help;
-        }
-
-        .item-tab {
-            width: 80px;
-            border-radius: 5px;
-            margin: 1px !important;
-            padding: 2px !important;
-            color: rgb(0, 255, 8) !important;
         }
 
         .formfonttitle {
