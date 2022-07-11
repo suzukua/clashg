@@ -19,11 +19,11 @@ unset_lock() {
 	rm -rf "$LOCK_FILE"
 }
 
-#auto_start() {
-#	LOGGER "创建开机/iptable重启任务"
-#	[ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/clashg/clashconfig.sh /koolshare/init.d/S99clashg.sh
-#	[ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/clashg/clashconfig.sh /koolshare/init.d/N99clashg.sh
-#}
+auto_start() {
+	LOGGER "创建开自启动"
+	[ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/S99clashg.sh
+	[ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/N99clashg.sh
+}
 
 add_nat(){
   if [ "${clashg_mixed_port_status}" == "on" ]; then
@@ -263,13 +263,13 @@ apply() {
   fi
   set_lock
 	# now stop first
-	LOGGER ======================= Clash G ======================== >> $LOG_FILE
+	LOGGER ======================= ClashG ======================== >> $LOG_FILE
 	LOGGER ---------------------- 重启dnsmasq,清除iptables+ipset规则 -------------------------- >> $LOG_FILE
 	prepare_stop
 	stop_clash
 	LOGGER --------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------ >> $LOG_FILE
 	LOGGER "" >> $LOG_FILE
-  LOGGER ---------------------- 启动Clash ------------------------ >> $LOG_FILE
+  LOGGER ---------------------- 启动ClashG ------------------------ >> $LOG_FILE
 	start_clash
 	LOGGER ""
 	LOGGER --------------------- 创建相关分流相关配置 开始------------------------ >> $LOG_FILE
@@ -287,15 +287,15 @@ apply() {
 
 case $ACTION in
 start)
-  LOGGER "开始启动Clash G" >> $LOG_FILE
+  LOGGER "开始启动ClashG" >> $LOG_FILE
 	apply
-	LOGGER "启动Clash G完成" >> $LOG_FILE
+	LOGGER "启动ClashG完成" >> $LOG_FILE
 	;;
 restart)
-	LOGGER "开始重启Clash G" >> $LOG_FILE
+	LOGGER "开始重启ClashG" >> $LOG_FILE
 	stop_clash
 	start_clash
-	LOGGER "重启Clash G完成" >> $LOG_FILE
+	LOGGER "重启ClashG完成" >> $LOG_FILE
 	;;
 start_nat)
   set_lock
@@ -309,9 +309,10 @@ start_nat)
   LOGGER --------------------- 创建相关iptables+ipset集 开始------------------------ >> $LOG_FILE
   add_ipset
   add_nat
+  restart_dnsmasq
   LOGGER --------------------- 创建相关iptables+ipset集 结束------------------------ >> $LOG_FILE
   LOGGER "" >> $LOG_FILE
-  LOGGER "============= Clash G start_nat完成=============" >> $LOG_FILE
+  LOGGER "============= ClashG start_nat完成=============" >> $LOG_FILE
   unset_lock
   ;;
 stop)

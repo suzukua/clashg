@@ -93,6 +93,14 @@ do_action() {
         response_json "$1" "$ret_data" "ok"
       fi
     ;;
+    start_nat)
+      if [ "$clashg_enable" == "on" ]; then
+        echo > $LOG_FILE #重置日志
+        sh $clashg_dir/clashconfig.sh start_nat
+        ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+        response_json "$1" "$ret_data" "ok"
+      fi
+    ;;
     get_config_file)
       ret_data=$(get_config_file)
       response_json "$1" "\"$ret_data\"" "ok"
