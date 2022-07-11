@@ -154,13 +154,16 @@ prepare_stop(){
   rm_all_cron
 }
 restart_dnsmasq(){
-  service restart_dnsmasq >/dev/null 2>&1
   dnsmasqpid=$(pidof dnsmasq)
-  procs=0
-	for d in $dnsmasqpid; do
-		procs=$(($procs+1))
-	done
-	LOGGER "dnsmasq进程数量为：$procs个" >> $LOG_FILE
+  LOGGER "重启前dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
+  service restart_dnsmasq >/dev/null 2>&1
+  sleep 0.5s
+  dnsmasqpid=$(pidof dnsmasq)
+#  procs=0
+#	for d in $dnsmasqpid; do
+#		procs=$(($procs+1))
+#	done
+	LOGGER "重启后dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
 }
 
 start_clash(){
@@ -192,7 +195,7 @@ start_clash(){
     		LOGGER $error4 >> $LOG_FILE
 		fi
     LOGGER "3s后停止clash：" >> $LOG_FILE
-		sleep 3s
+		sleep 2s
 		prepare_stop
 	  stop_clash
 	fi
