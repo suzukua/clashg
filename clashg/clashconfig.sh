@@ -47,7 +47,7 @@ rm_nat(){
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
 #  iptables -t nat -D PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
 	LOGGER 删除iptables开始 >> $LOG_FILE
-#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=")
+#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=" | sort -n)
 #  for ipset_index in $ipset_indexs; do
 #    iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
 #  done
@@ -55,17 +55,17 @@ rm_nat(){
   #tproxy模式
   ip rule del fwmark 10 table 100
   ip route del local 0.0.0.0/0 dev lo table 100
-	ipset_indexs=$(iptables -t mangle -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${tproxy_port}/=")
+	ipset_indexs=$(iptables -t mangle -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${tproxy_port}/=" | sort -n)
   for ipset_index in $ipset_indexs; do
     iptables -t mangle -D PREROUTING $ipset_index >/dev/null 2>&1
   done
 
 	# 清理mixedport端口
-	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
+	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -n)
 	for ipset_index in $ipset_indexs; do
 		iptables -D INPUT $ipset_index >/dev/null 2>&1
 	done
-	ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
+	ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -n)
 	for ipset_index in $ipset_indexs; do
 		ip6tables -D INPUT $ipset_index >/dev/null 2>&1
 	done
