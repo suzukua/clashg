@@ -10,7 +10,7 @@ KSHOME="/koolshare"
 source ${KSHOME}/scripts/base.sh
 
 LOGGER() {
-    logger -s -t "$(date +%Y年%m月%d日%H:%M:%S):clash" "$@"
+    logger -s -t "【$(date +'%Y年%m月%d日 %H:%M:%S')】:clashg" "$@"
 }
 
 app_name="clashg"

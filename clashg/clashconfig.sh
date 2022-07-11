@@ -48,9 +48,16 @@ rm_nat(){
 	for ipset_index in $ipset_indexs; do
 		iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
 	done
-  # 清理socks端口
-	iptables -D INPUT -p tcp --dport $mixedport -j ACCEPT
-	ip6tables -D INPUT -p tcp --dport $mixedport -j ACCEPT
+
+	# 清理mixedport端口
+	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
+	for ipset_index in $ipset_indexs; do
+		iptables -D INPUT -p tcp --dport $mixedport -j ACCEPT >/dev/null 2>&1
+	done
+	ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=")
+	for ipset_index in $ipset_indexs; do
+		ip6tables -D INPUT -p tcp --dport $mixedport -j ACCEPT >/dev/null 2>&1
+	done
 	LOGGER 删除iptables完成 >> $LOG_FILE
 }
 add_ipset(){
@@ -157,7 +164,7 @@ restart_dnsmasq(){
   dnsmasqpid=$(pidof dnsmasq)
   LOGGER "重启前dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
   service restart_dnsmasq >/dev/null 2>&1
-  sleep 0.5s
+  usleep 500000 #500ms
   dnsmasqpid=$(pidof dnsmasq)
 #  procs=0
 #	for d in $dnsmasqpid; do
@@ -204,7 +211,7 @@ start_clash(){
 stop_clash(){
   clash_process=$(pidof clash)
 	if [ -n "$clash_process" ]; then
-		LOGGER 关闭Clash进程... >> $LOG_FILE
+		LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
 		killall clash >/dev/null 2>&1
 		kill -9 "$clash_process" >/dev/null 2>&1
 	fi
