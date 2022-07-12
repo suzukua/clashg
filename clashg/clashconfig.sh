@@ -40,10 +40,10 @@ add_nat(){
   fi
   ip rule add fwmark 10 table 100
   ip -f inet route add local 0.0.0.0/0 dev lo table 100
-  iptables -t mangle -I PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -I PREROUTING -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -I PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -I PREROUTING -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A PREROUTING -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A PREROUTING -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
