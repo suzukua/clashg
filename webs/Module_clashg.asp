@@ -363,29 +363,6 @@
                 "clashg_mixed_port_status": dbus["clashg_mixed_port_status"]
             });
         }
-        // function set_log_type() {
-        //     // 界面切换日志弹出框模式
-        //     if (dbus["clash_log_type"] == "on") {
-        //         //开启日志弹出框模式
-        //         $j("#logMsg").hide();
-        //         $j("#logBackup").show();
-        //     } else {
-        //         //关闭日志弹出框模式
-        //         $j("#logMsg").show();
-        //         $j("#logBackup").hide();
-        //     }
-        // }
-        //切换日志弹出框模式
-        // function switch_log_type() {
-        //     if (document.getElementById('clash_log_type').checked) {
-        //         dbus["clash_log_type"] = "on";
-        //     } else {
-        //         dbus["clash_log_type"] = "off";
-        //     }
-        //     apply_action("set_log_type", "2", set_log_type, {
-        //         "clash_log_type": dbus["clash_log_type"]
-        //     });
-        // }
 
 
         function get_proc_status() { // 查看服务运行状态
@@ -406,43 +383,6 @@
             apply_action("subscribe", "0", null,{
                 "clashg_subscribe_args": dbus["clashg_subscribe_args"]
             });
-        }
-
-        // function update_provider_file() { // 更新节点订阅源URL
-        //     dbus["clash_provider_file"] = Base64.encode(document.getElementById("clash_provider_file").value);
-        //     apply_action("update_provider_file", "0", null, {
-        //         "clash_provider_file": dbus["clash_provider_file"],
-        //     });
-        // }
-
-        // 更新 clash 新版本
-        function update_clash_bin() { // 按名称删除 DIY节点
-            apply_action("update_clash_bin");
-            document.getElementById("clash_install_show").style.display = "none";
-        }
-
-        // 忽略新版本提示
-        function ignore_new_version() {
-            // 3秒自动刷新页面
-            apply_action("ignore_new_version", "0", function(data) {
-                dbus["clashg_version"] = data["clashg_version"];
-                version_show();
-            }, {
-                "clash_new_version": dbus["clash_new_version"]
-            });
-        }
-
-        function show_router_info() {
-            apply_action("show_router_info", "0", null, {});
-        }
-
-        // 备份配置文件
-        function backup_config_file() {
-            apply_action("backup_config_file", "0", function() {
-                show_result("备份配置文件成功，请到下载本地目录查看");
-                window.location = "/_temp/clash_backup.tar.gz"
-            }, {});
-
         }
 
         // 恢复配置信息的压缩包文件
@@ -656,56 +596,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <!--<tr>
-                            <th>
-                                <label title="默认关闭，如果有公网IPv6地址，可开启此选项。">支持IPv6模式</label>
-                            </th>
-                            <td colspan="2">
-                                <div class="switch_field">
-                                    <label for="clash_ipv6_mode">
-                                        <input id="clash_ipv6_mode" onclick="switch_ipv6_mode();" class="switch" type="checkbox" style="display: none;">
-                                        <div class="switch_container">
-                                            <div class="switch_bar"></div>
-                                            <div class="switch_circle transition_style"></div>
-                                        </div>
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                <label>备份配置</label>
-                            </th>
-                            <td colspan="2">
-                                <input type="button" class="button_gen" onclick="backup_config_file();" value="开始备份">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label>恢复配置</label>
-                            </th>
-                            <td colspan="2">
-                                <input type="button" class="button_gen" onclick="restore_config_file();" value="开始恢复">
-                                <input style="color:#FFCC00;*color:#000;width: 200px;" id="restore_file" type="file" name="file">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label>上传<b>config.yaml</b>文件</label>
-                            </th>
-                            <td colspan="2">
-                                <input type="button" id="upload_btn" class="button_gen" onclick="upload_config_file();" value="开始上传">
-                                <input style="color:#FFCC00;*color:#000;width: 200px;" id="file" type="file" name="file">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>注意事项</b>:<br>&nbsp;&nbsp;&nbsp;&nbsp;
-                                <b>1. 确保配置的Yaml格式正确性: </b>本插件会修改redir-port/dns.listen/external-controller/external-ui参数<br>&nbsp;&nbsp;&nbsp;&nbsp;
-                                <b>2. 重要提醒: 修改前记得备份!!!</b><br/>
-                            </td>
-                        </tr>-->
                     </table>
                     <!-- 在线编辑配置文件内容 -->
                     <table id="menu_config" class="FormTable">
@@ -722,30 +612,12 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <a type="button" class="button_gen" onclick="edit_config_content()" href="javascript:void(0);">编辑</a> &nbsp;&nbsp;&nbsp;&nbsp;
-                                <a type="button" class="button_gen" onclick="save_config_content()" href="javascript:void(0);">保存</a>
-                                <a type="button" class="button_gen" onclick="reset_config_file()" href="javascript:void(0);">恢复安装时刻配置</a>
+                                <button type="button" class="button_gen" onclick="edit_config_content()" href="javascript:void(0);">编辑</button> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" class="button_gen" onclick="save_config_content()" href="javascript:void(0);">保存</button>
+                                <button type="button" class="button_gen" onclick="reset_config_file()" href="javascript:void(0);">恢复安装时刻配置</button>
                             </td>
                         </tr>
                     </table>
-                    <!-- 帮助信息
-                    <table id="menu_help" class="FormTable">
-                        <thead>
-                            <tr>
-                                <td>vClash - 使用帮助</td>
-                            </tr>
-                        </thead>
-                        <tr>
-                            <td>
-                                <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">使用说明：</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">1. 个人节点添加</b>:在“节点管理”>"更新DIY组"添加，一次添加不再更新。</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">2. 订阅节点添加</b>:在"节点管理">"PROXY组"添加，每小时更新一次。</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">3. 插件的兼容性</b>: 透明代理模式时会与<b style="color: rgb(32, 252, 32);">其他代理插件冲突</b> ，使用前要关闭其他透明代理插件。</p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">4. 学习配置规则</b>: 核心配置为clash的启动配置文件,请阅读<a target="_blank" href="https://github.com/Dreamacro/clash/wiki/configuration">官方配置说明文档</a></p>
-                                <p style="color:#FC0">&nbsp;&nbsp;&nbsp;&nbsp;<b style="color: rgb(32, 252, 32);">5. 学习插件用法</b>: 可阅读<a target="_blank" href="https://github.com/learnhard-cn/vClash/wiki">vClash项目wiki页面</a></p>
-                            </td>
-                        </tr>
-                    </table> -->
                     <table id="menu_log" class="FormTable">
                         <thead>
                             <tr>
@@ -761,10 +633,7 @@
                     </table>
                     <!--打开 Clash控制面板-->
                     <div id="status_tools " style="margin-top: 25px; padding-bottom: 20px;">
-<!--                        <a type="button" class="button_gen debug" onclick="test_res(); " href="javascript:void(0); ">Test按钮</a> &nbsp;&nbsp;&nbsp;-->
-<!--                        <a type="button" class="button_gen" onclick="get_proc_status(); " href="javascript:void(0); ">状态检查</a> &nbsp;&nbsp;&nbsp;-->
-<!--                        <a type="button" class="button_gen" onclick="show_router_info(); " href="javascript:void(0); ">路由信息</a> &nbsp;&nbsp;&nbsp;-->
-                        <a type="button" class="button_gen" id="clash_yacd_ui" href="http://clash.metacubex.one/" target="_blank">metacubex控制面板</a>
+                        <button type="button" class="button_gen" id="clash_yacd_ui" onclick="window.open('http://clash.metacubex.one/', '_blank');" target="_blank">metacubex控制面板</button>
                     </div>
 
                     <div>
