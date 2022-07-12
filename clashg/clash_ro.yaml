@@ -5,6 +5,8 @@ authentication:
   - "home:abc123"
 redir-port: 23457
 allow-lan: true
+tproxy: true
+tproxy-port: 23458
 mode: Rule
 log-level: error
 external-controller: 192.168.100.1:9990
@@ -31,9 +33,6 @@ dns:
     - quic://i.passcloud.xyz:784
     - tcp://208.67.222.222:443
     - tls://dns.google
-
-tproxy: true
-tproxy-port: 23458
 
 sniffer:
   enable: true

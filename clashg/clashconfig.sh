@@ -34,7 +34,10 @@ add_nat(){
   #匹配gfwlist中ip的nat流量均被转发到clash端口
 #  iptables -t nat -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
 #  iptables -t nat -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
-## tproxy模式
+  # tproxy模式
+  if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
+    modprobe -a "xt_TPROXY"  >/dev/null 2>&1
+  fi
   ip rule add fwmark 10 table 100
   ip -f inet route add local 0.0.0.0/0 dev lo table 100
   iptables -t mangle -I PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
@@ -44,8 +47,6 @@ add_nat(){
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
-#  iptables -t nat -D PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
-#  iptables -t nat -D PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
 	LOGGER 删除iptables开始 >> $LOG_FILE
 #	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=" | sort -r)
 #  for ipset_index in $ipset_indexs; do

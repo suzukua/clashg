@@ -83,7 +83,7 @@ do_action() {
         echo > $LOG_FILE #重置日志
         sh $clashg_dir/clashconfig.sh start
         ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-        response_json "$1" "$ret_data" "ok"
+        [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
       fi
     ;;
     stop)
@@ -98,7 +98,7 @@ do_action() {
         echo > $LOG_FILE #重置日志
         sh $clashg_dir/clashconfig.sh start_nat
         ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-        response_json "$1" "$ret_data" "ok"
+        [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
       fi
     ;;
     get_config_file)
@@ -152,5 +152,10 @@ do_action() {
 }
 
 echo >> $LOG_FILE
-do_action $@ 2>&1 | tee -a $LOG_FILE
+if [ "$1" == "start" -o "$1" == "start_nat" ]; then
+  do_action -1 $@ 2>&1 | tee -a $LOG_FILE
+else
+  do_action $@ 2>&1 | tee -a $LOG_FILE
+fi
+
 echo "XU6J03M6" >> $LOG_FILE

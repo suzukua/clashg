@@ -133,11 +133,11 @@ get_fw_type() {
 
 # 清理旧文件，升级情况需要
 remove_files() {
-
     if [ -d "/koolshare/${app_name}" ] ; then
         LOGGER 开始 清理旧文件
         rm -rf /koolshare/${app_name}
         rm -rf /koolshare/scripts/${app_name}_*
+        rm -rf /koolshare/res/icon-${app_name}.png
         rm -rf /koolshare/webs/Module_${app_name}.asp
         rm -rf /koolshare/init.d/S??${app_name}.sh
         LOGGER 完成 清理旧文件
