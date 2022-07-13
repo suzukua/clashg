@@ -44,9 +44,9 @@ get_status(){
   fi
 
   iptables_status="iptables="
-#  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$tproxy_port")
-  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
-  if [ "$iptables_count" -ne "2" ]; then
+  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$tproxy_port")
+#  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
+  if [ "$iptables_count" -ne "4" ]; then
     iptables_status="${iptables_status}状态:不正常(${iptables_count}条)"
   else
     iptables_status="${iptables_status}状态:正常(${iptables_count}条)"
