@@ -5,8 +5,8 @@ authentication:
   - "home:abc123"
 redir-port: 23457
 allow-lan: true
-tproxy: true
-tproxy-port: 23458
+#tproxy: true
+#tproxy-port: 23458
 mode: Rule
 log-level: error
 external-controller: 192.168.100.1:9990
