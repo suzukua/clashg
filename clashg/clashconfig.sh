@@ -39,7 +39,7 @@ add_nat(){
     modprobe -a "xt_TPROXY"  >/dev/null 2>&1
   fi
   ip rule add fwmark 10 table 100
-  ip -f inet route add local 0.0.0.0/0 dev lo table 100
+  ip route add local 0.0.0.0/0 dev lo table 100
   iptables -t mangle -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A PREROUTING -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
