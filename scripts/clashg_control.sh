@@ -44,7 +44,7 @@ get_status(){
   fi
 
   iptables_status="iptables="
-  iptables_count=$(iptables -t mangle -vnL --line-number |grep -c "$mangle_name")
+  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$mangle_name")
 #  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
   if [ "$iptables_count" -ne "1" ]; then
     iptables_status="${iptables_status}状态:不正常(${mangle_name}链未添加到mangle表)"
