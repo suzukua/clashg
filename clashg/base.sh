@@ -18,6 +18,9 @@ remote_proxy_cidr='https://raw.githubusercontent.com/zhudan/gfwlist2dnsmasq/hidd
 dnsmasq_gfw_ipset="dnsmasq_gfw"
 gfw_cidr_ipset="gfw_cidr"
 
+#mangle 表名字
+mangle_name=clashg
+
 gfw_file=/tmp/clashg_gfw.conf
 ipcidr_file=/tmp/clashg_cidr_tmp.txt
 

@@ -40,13 +40,23 @@ add_nat(){
   fi
   ip rule add fwmark 10 table 100
   ip route add local 0.0.0.0/0 dev lo table 100
-  #跳过clash自身流量
-  iptables -t mangle -A PREROUTING -j RETURN -m mark --mark 255
-  #内置规则
-  iptables -t mangle -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-ip 127.0.0.1 --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -A PREROUTING -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-ip 127.0.0.1 --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-ip 127.0.0.1 --on-port $tproxy_port --tproxy-mark 10
-  iptables -t mangle -A PREROUTING -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-ip 127.0.0.1 --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -N "$mangle_name"
+  iptables -t mangle -A "$mangle_name" -d 0.0.0.0/8 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 127.0.0.0/8 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 10.0.0.0/8 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 172.16.0.0/12 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 192.168.0.0/16 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 169.254.0.0/16 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 224.0.0.0/4 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 240.0.0.0/4 -j RETURN
+  iptables -t mangle -A "$mangle_name" -d 255.255.255.255/32 -j RETURN
+#  iptables -t mangle -A "$mangle_name" -m mark --mark 255 -j RETURN
+
+  iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  iptables -t mangle -A PREROUTING -j "$mangle_name"
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
@@ -59,11 +69,12 @@ rm_nat(){
   #tproxy模式
   ip rule del fwmark 10 table 100 >/dev/null 2>&1
   ip route del local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1
-  iptables -t mangle -D PREROUTING -j RETURN -m mark --mark 255
-	ipset_indexs=$(iptables -t mangle -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${tproxy_port}/=" | sort -r)
-  for ipset_index in $ipset_indexs; do
-    iptables -t mangle -D PREROUTING $ipset_index >/dev/null 2>&1
-  done
+  #删除
+  iptables -t mangle -D PREROUTING -j "$mangle_name" >/dev/null 2>&1
+  #清空
+  iptables -t mangle -F "$mangle_name" >/dev/null 2>&1
+  #删除
+  iptables -t mangle -X "$mangle_name" >/dev/null 2>&1
 
 	# 清理mixedport端口
 	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)

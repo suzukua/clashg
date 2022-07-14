@@ -44,12 +44,12 @@ get_status(){
   fi
 
   iptables_status="iptables="
-  iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$tproxy_port")
+  iptables_count=$(iptables -t mangle -vnL --line-number |grep -c "$mangle_name")
 #  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
-  if [ "$iptables_count" -ne "4" ]; then
-    iptables_status="${iptables_status}状态:不正常(${iptables_count}条)"
+  if [ "$iptables_count" -ne "1" ]; then
+    iptables_status="${iptables_status}状态:不正常(${mangle_name}链未添加到mangle表)"
   else
-    iptables_status="${iptables_status}状态:正常(${iptables_count}条)"
+    iptables_status="${iptables_status}状态:正常(${mangle_name}链已到mangle表添加)"
   fi
   if [ -f "$clash_file" ]; then
     it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$mixedport")

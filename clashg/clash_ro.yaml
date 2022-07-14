@@ -17,22 +17,21 @@ secret: "clash"
 profile:
   store-selected: false
 ipv6: false
-routing-mark: 255
+#routing-mark: 255
 
 dns:
   enable: true
   ipv6: false
   listen: :23453
   default-nameserver:
-    - 61.139.2.69
-    - 218.6.200.139
-    - "[240e:56:4000:8000::69]:53"
-    - "[240e:56:4000::218]:53"
+    - https://223.5.5.5/dns-query
+    - https://1.12.12.12/dns-query
   enhanced-mode: redir-host
   nameserver:
-    - quic://i.passcloud.xyz:784
+#    Meta UDP协议的DNS会导致UDN链接数增多不释放导致崩溃，推荐TCP协议DNS
+    - https://i.passcloud.xyz/dns-query
     - tcp://208.67.222.222:443
-    - tls://dns.google
+    - https://dns.google/dns-query
 
 sniffer:
   enable: true
