@@ -58,6 +58,7 @@ add_nat(){
   iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A PREROUTING -j "$mangle_name"
+#  iptables -t mangle -A PREROUTING -i br0 -j "$mangle_name"
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
