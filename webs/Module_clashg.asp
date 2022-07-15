@@ -128,10 +128,11 @@
         }
 
         function getStatus(){
-            $j("tr[js_add]").remove()
+
             apply_action("get_status", 2, function(data){
                 if(data){
                     //#返回clash=key:value-key:value;gfw=key:value-key:value
+                    var trs = "";
                     var statusGroups=data.split(";")
                     for(let i = 0; i < statusGroups.length; i++) {
                       var statusGroupName = statusGroups[i].split("=")[0]
@@ -148,9 +149,10 @@
                           }
                           td += "</td>"
                       }
-                      var tr = "<tr js_add>" + th + td + "</tr>"
-                      $j("#menu_default").append(tr);
+                      trs += "<tr js_add>" + th + td + "</tr>"
                     }
+                    $j("tr[js_add]").remove()
+                    $j("#menu_default").append(trs);
                 }
             })
         }

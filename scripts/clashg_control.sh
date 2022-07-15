@@ -32,7 +32,7 @@ reset_config_file(){
 
 get_status(){
   #返回clash=key:value-key:value;gfw=key:value-key:value
-  clash_status="clash="
+  clash_status="Clash="
   clashpid="$(pidof clash)"
   if [ -z "$clashpid" ]; then
     clash_status="${clash_status}启动状态:不正常"
@@ -43,7 +43,7 @@ get_status(){
     clash_status="${clash_status}-clash.yaml:不存在"
   fi
 
-  iptables_status="iptables="
+  iptables_status="IPTABLES="
   iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$mangle_name")
 #  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
   if [ "$iptables_count" -ne "1" ]; then
@@ -57,7 +57,7 @@ get_status(){
     iptables_status="${iptables_status}-mixedport:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
   fi
 
-  ipset_status="ipset分流规则="
+  ipset_status="IPSET分流="
   ipset_txt=$(ipset list|grep "$gfw_cidr_ipset")
   if [ -z "$ipset_txt" ]; then
     ipset_status="${ipset_status}状态:不正常(${gfw_cidr_ipset}未创建)"
@@ -67,14 +67,19 @@ get_status(){
     ipset_status="${ipset_status}状态:正常(ipset已导入${ipset_import_count}行, ipset文件${ipset_file_count}行)"
   fi
 
-  gfw_status="gfw分流规则="
+  gfw_status="GFW域名分流="
   if [ -f /jffs/configs/dnsmasq.d/clashg_gfw.conf  ]; then
     gfw_rows=$(head -n 1 /jffs/configs/dnsmasq.d/clashg_gfw.conf | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
     gfw_status="${gfw_status}文件挂载:正常(${gfw_rows}条)"
   else
     gfw_status="${gfw_status}文件挂载:不正常"
   fi
-  echo "$clash_status;$gfw_status;$ipset_status;$iptables_status"
+
+  clash_tcp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep tcp -c)
+  clash_udp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep udp -c)
+  netstat_status="NETSTAT连接数=TCP:${clash_tcp_count}条-UDP:${clash_udp_count}条"
+
+  echo "$clash_status;$gfw_status;$ipset_status;$iptables_status;$netstat_status"
 }
 do_action() {
   ACTION="$2"
