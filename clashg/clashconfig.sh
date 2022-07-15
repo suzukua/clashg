@@ -41,6 +41,7 @@ add_nat(){
   ip rule add fwmark 10 table 100
   ip route add local 0.0.0.0/0 dev lo table 100
   iptables -t mangle -N "$mangle_name"
+  iptables -t mangle -F "$mangle_name"
   iptables -t mangle -A "$mangle_name" -d 0.0.0.0/8 -j RETURN
   iptables -t mangle -A "$mangle_name" -d 127.0.0.0/8 -j RETURN
   iptables -t mangle -A "$mangle_name" -d 10.0.0.0/8 -j RETURN
