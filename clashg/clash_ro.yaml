@@ -31,7 +31,7 @@ dns:
     - https://223.6.6.6/dns-query
   enhanced-mode: redir-host
   nameserver:
-    - quic://a.passcloud.xyz:784
+#    - quic://a.passcloud.xyz:784
     - https://doh.dns.sb/dns-query
     - tcp://208.67.222.222:443
     - tls://dns.google
