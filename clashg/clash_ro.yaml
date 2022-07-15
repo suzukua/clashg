@@ -1,8 +1,10 @@
 port: 3333
+
 mixed-port: 23456
 #代理用户名密码
 authentication:
   - "home:abc123"
+
 redir-port: 23457
 allow-lan: true
 tproxy: true
@@ -11,13 +13,14 @@ mode: Rule
 log-level: error
 external-controller: 192.168.100.1:9990
 #external-ui: dashboard
-experimental:
-  ignore-resolve-fail: true
 secret: "clash"
 profile:
   store-selected: false
 ipv6: false
 #routing-mark: 255
+
+#【Meta专属】TCP连接并发，如果域名解析结果对应多个IP, 并发所有IP，选择握手最快的IP进行连接
+#tcp-concurrent: true
 
 dns:
   enable: true
@@ -25,13 +28,14 @@ dns:
   listen: :23453
   default-nameserver:
     - https://223.5.5.5/dns-query
-    - https://1.12.12.12/dns-query
+    - https://223.6.6.6/dns-query
   enhanced-mode: redir-host
   nameserver:
-#    Meta UDP协议的DNS会导致UDN链接数增多不释放导致崩溃，推荐TCP协议DNS
-    - https://i.passcloud.xyz/dns-query
+    - quic://a.passcloud.xyz:784
+    - https://doh.dns.sb/dns-query
     - tcp://208.67.222.222:443
     - https://dns.google/dns-query
+#    - 'tls://8.8.4.4:853#DNSg'       #【Meta专属】"#DNSg"代表该DNS服务器通过,名为"DNSg"的proxy Group访问
 
 sniffer:
   enable: true
