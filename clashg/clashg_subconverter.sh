@@ -16,37 +16,37 @@ failed_warning_clash(){
 }
 
 start_online_update_hnd(){
-	links="http://127.0.0.1:25500/sub?${subconverter_args}"
-	LOGGER "subconverter进程：$(pidof subconverter)" >> $LOG_FILE
-	LOGGER "即将开始转换，需要一定时间，请等候处理" >> $LOG_FILE
-	sleep 3s
-	LOGGER "生成订阅链接：$links" >> $LOG_FILE
+  links="http://127.0.0.1:25500/sub?${subconverter_args}"
+  LOGGER "subconverter进程：$(pidof subconverter)" >> $LOG_FILE
+  LOGGER "即将开始转换，需要一定时间，请等候处理" >> $LOG_FILE
+  sleep 3s
+  LOGGER "生成订阅链接：$links" >> $LOG_FILE
 
-	#wget下载文件
-	#wget --no-check-certificate -t3 -T30 -4 -O /tmp/upload/$upname "$links"
-	UA='Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36'
-	LOGGER "使用常规网络下载..." >> $LOG_FILE
-	curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file
-	LOGGER "配置文件下载完成" >>$LOG_FILE
-	#虽然为0但是还是要检测下是否下载到正确的内容
-	if [ "$?" == "0" ];then
-		#下载为空...
-		if [ -z "$(cat $clash_sub_file)" ]; then
-			LOGGER "使用curl下载成功，但是内容为空，尝试更换wget进行下载..."	>> $LOG_FILE
-			rm -rf $clash_sub_file
-			wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"--no-check-certificate -t3 -T30 -4 -O $clash_sub_file "$links"
-		fi
-		LOGGER "检查文件完整性" >> $LOG_FILE
-		if [ -z "$(cat $clash_sub_file)" ];then
-			LOGGER "获取clash配置文件失败！" >> $LOG_FILE
-			failed_warning_clash
+  #wget下载文件
+  #wget --no-check-certificate -t3 -T30 -4 -O /tmp/upload/$upname "$links"
+  UA='Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36'
+  LOGGER "使用常规网络下载..." >> $LOG_FILE
+  curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file
+  LOGGER "配置文件下载完成" >>$LOG_FILE
+  #虽然为0但是还是要检测下是否下载到正确的内容
+  if [ "$?" == "0" ];then
+    #下载为空...
+    if [ -z "$(cat $clash_sub_file)" ]; then
+      LOGGER "使用curl下载成功，但是内容为空，尝试更换wget进行下载..."	>> $LOG_FILE
+      rm -rf $clash_sub_file
+      wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"--no-check-certificate -t3 -T30 -4 -O $clash_sub_file "$links"
+    fi
+    LOGGER "检查文件完整性" >> $LOG_FILE
+    if [ -z "$(cat $clash_sub_file)" ];then
+      LOGGER "获取clash配置文件失败！" >> $LOG_FILE
+      failed_warning_clash
     else
       merge
-		fi
-	else
-		LOGGER "下载超时" >> $LOG_FILE
-		failed_warning_clash
-	fi
+    fi
+  else
+    LOGGER "下载超时" >> $LOG_FILE
+    failed_warning_clash
+  fi
 }
 
 merge(){

@@ -10,19 +10,19 @@ clashg_mixed_port_status=$(get clashg_mixed_port_status)
 LOCK_FILE=/var/lock/clashg.lock
 
 set_lock() {
-	exec 1000>"$LOCK_FILE"
-	flock -x 1000
+  exec 1000>"$LOCK_FILE"
+  flock -x 1000
 }
 
 unset_lock() {
-	flock -u 1000
-	rm -rf "$LOCK_FILE"
+  flock -u 1000
+  rm -rf "$LOCK_FILE"
 }
 
 auto_start() {
-	LOGGER "判断是否创建开自启动"
-	[ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/S99clashg.sh
-	[ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/N99clashg.sh
+  LOGGER "判断是否创建开自启动"
+  [ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/S99clashg.sh
+  [ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/N99clashg.sh
 }
 
 add_nat(){
@@ -77,16 +77,16 @@ rm_nat(){
   #删除
   iptables -t mangle -X "$mangle_name" >/dev/null 2>&1
 
-	# 清理mixedport端口
-	ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
-	for ipset_index in $ipset_indexs; do
-		iptables -D INPUT $ipset_index >/dev/null 2>&1
-	done
-	ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
-	for ipset_index in $ipset_indexs; do
-		ip6tables -D INPUT $ipset_index >/dev/null 2>&1
-	done
-	LOGGER 删除iptables完成 >> $LOG_FILE
+  # 清理mixedport端口
+  ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
+  for ipset_index in $ipset_indexs; do
+    iptables -D INPUT $ipset_index >/dev/null 2>&1
+  done
+  ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
+  for ipset_index in $ipset_indexs; do
+    ip6tables -D INPUT $ipset_index >/dev/null 2>&1
+  done
+  LOGGER 删除iptables完成 >> $LOG_FILE
 }
 add_ipset(){
   #创建名为gfwlist，格式为iphash的集合
@@ -212,37 +212,37 @@ start_clash(){
 	if [ ! -z "$(pidof clash)" -a ! -z "$(netstat -anp | grep clash)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
 		LOGGER "Clash 进程启动成功！(PID: $(pidof clash))"
 	else
-		LOGGER "Clash 进程启动失败！请检查配置文件是否存在问题，即将退出" >> $LOG_FILE
-		LOGGER "Clash 进程启动失败！请查看日志检查原因" >> $LOG_FILE
-		LOGGER "失败原因：" >> $LOG_FILE
-		error1=$(cat /tmp/clashg_run.log | grep -oE "Parse config error.*")
-		error2=$(cat /tmp/clashg_run.log | grep -oE "clashconfig.sh.*")
-		error3=$(cat /tmp/clashg_run.log | grep -oE "illegal instruction.*")
-		error4=$(cat /tmp/clashg_run.log | grep -n "level=error" | head -1 | grep -oE "msg=.*")
-		if [ -n "$error1" ]; then
-    		LOGGER $error1 >> $LOG_FILE
-		elif [ -n "$error2" ]; then
-    		LOGGER $error2 >> $LOG_FILE
-		elif [ -n "$error3" ]; then
-    		LOGGER $error3 >> $LOG_FILE
-			LOGGER "clash二进制故障，请重新上传" >> $LOG_FILE
-		elif [ -n "$error4" ]; then
-    		LOGGER $error4 >> $LOG_FILE
-		fi
-    LOGGER "3s后停止clash：" >> $LOG_FILE
-		sleep 2s
-		prepare_stop
-	  stop_clash
+    LOGGER "Clash 进程启动失败！请检查配置文件是否存在问题，即将退出" >> $LOG_FILE
+    LOGGER "Clash 进程启动失败！请查看日志检查原因" >> $LOG_FILE
+    LOGGER "失败原因：" >> $LOG_FILE
+    error1=$(cat /tmp/clashg_run.log | grep -oE "Parse config error.*")
+    error2=$(cat /tmp/clashg_run.log | grep -oE "clashconfig.sh.*")
+    error3=$(cat /tmp/clashg_run.log | grep -oE "illegal instruction.*")
+    error4=$(cat /tmp/clashg_run.log | grep -n "level=error" | head -1 | grep -oE "msg=.*")
+    if [ -n "$error1" ]; then
+      LOGGER $error1 >> $LOG_FILE
+    elif [ -n "$error2" ]; then
+      LOGGER $error2 >> $LOG_FILE
+    elif [ -n "$error3" ]; then
+      LOGGER $error3 >> $LOG_FILE
+      LOGGER "clash二进制故障，请重新上传" >> $LOG_FILE
+    elif [ -n "$error4" ]; then
+      LOGGER $error4 >> $LOG_FILE
+    fi
+    LOGGER "2s后停止clash：" >> $LOG_FILE
+    sleep 2s
+    prepare_stop
+    stop_clash
 	fi
 }
 
 stop_clash(){
   clash_process=$(pidof clash)
-	if [ -n "$clash_process" ]; then
-		LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
-		killall clash >/dev/null 2>&1
-		kill -9 "$clash_process" >/dev/null 2>&1
-	fi
+  if [ -n "$clash_process" ]; then
+    LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
+    killall clash >/dev/null 2>&1
+    kill -9 "$clash_process" >/dev/null 2>&1
+  fi
 }
 
 
@@ -293,54 +293,54 @@ rm_all_cron(){
 
 apply() {
   if [ ! -f "$clash_file" ]; then
-      LOGGER "clash配置文件$clash_file不存在，请重新订阅！！！！！！！！" >> $LOG_FILE
-      return 1
+    LOGGER "clash配置文件$clash_file不存在，请重新订阅！！！！！！！！" >> $LOG_FILE
+    return 1
   fi
   set_lock
 	# now stop first
-	LOGGER ======================= ClashG ======================== >> $LOG_FILE
-	LOGGER ---------------------- 重启dnsmasq,清除iptables+ipset规则 -------------------------- >> $LOG_FILE
-	prepare_stop
-	stop_clash
-	LOGGER --------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------ >> $LOG_FILE
-	LOGGER "" >> $LOG_FILE
+  LOGGER ======================= ClashG ======================== >> $LOG_FILE
+  LOGGER ---------------------- 重启dnsmasq,清除iptables+ipset规则 -------------------------- >> $LOG_FILE
+  prepare_stop
+  stop_clash
+  LOGGER --------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------ >> $LOG_FILE
+  LOGGER "" >> $LOG_FILE
   LOGGER ---------------------- 启动ClashG ------------------------ >> $LOG_FILE
-	start_clash
-	LOGGER ""
-	LOGGER --------------------- 创建相关分流相关配置 开始------------------------ >> $LOG_FILE
-	prepare_start
-	LOGGER --------------------- 创建相关分流相关配置 结束------------------------ >> $LOG_FILE
-	auto_start
-	LOGGER "" >> $LOG_FILE
+  start_clash
+  LOGGER ""
+  LOGGER --------------------- 创建相关分流相关配置 开始------------------------ >> $LOG_FILE
+  prepare_start
+  LOGGER --------------------- 创建相关分流相关配置 结束------------------------ >> $LOG_FILE
+  auto_start
+  LOGGER "" >> $LOG_FILE
 
   LOGGER "" >> $LOG_FILE
-	LOGGER "恭喜！开启ClashG成功！" >> $LOG_FILE
-	LOGGER "" >> $LOG_FILE
-	LOGGER "如果不能科学上网，请刷新设备dns缓存，或者等待几分钟再尝试" >> $LOG_FILE
-	LOGGER "" >> $LOG_FILE
-	unset_lock
+  LOGGER "恭喜！开启ClashG成功！" >> $LOG_FILE
+  LOGGER "" >> $LOG_FILE
+  LOGGER "如果不能科学上网，请刷新设备dns缓存，或者等待几分钟再尝试" >> $LOG_FILE
+  LOGGER "" >> $LOG_FILE
+  unset_lock
 }
 
 case $ACTION in
 start|start_nat)
   LOGGER "开始启动ClashG" >> $LOG_FILE
-	apply
-	LOGGER "启动ClashG完成" >> $LOG_FILE
+  apply
+  LOGGER "启动ClashG完成" >> $LOG_FILE
 	;;
 restart)
-	LOGGER "开始重启ClashG" >> $LOG_FILE
-	stop_clash
-	start_clash
-	LOGGER "重启ClashG完成" >> $LOG_FILE
+  LOGGER "开始重启ClashG" >> $LOG_FILE
+  stop_clash
+  start_clash
+  LOGGER "重启ClashG完成" >> $LOG_FILE
 	;;
 stop)
-	set_lock
-	prepare_stop
-	stop_clash
-	LOGGER
-	LOGGER "停止clashG" >> $LOG_FILE
-	LOGGER
-	unset_lock
+  set_lock
+  prepare_stop
+  stop_clash
+  LOGGER
+  LOGGER "停止clashG" >> $LOG_FILE
+  LOGGER
+  unset_lock
 	;;
 update_dns_ipset_rule)
   set_lock
