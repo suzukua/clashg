@@ -31,9 +31,6 @@ add_nat(){
     iptables -I INPUT -p tcp --dport $mixedport -j ACCEPT
     ip6tables -I INPUT -p tcp --dport $mixedport -j ACCEPT
   fi
-  #匹配gfwlist中ip的nat流量均被转发到clash端口
-#  iptables -t nat -A PREROUTING -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j REDIRECT --to-port "$proxy_port"
-#  iptables -t nat -A PREROUTING -p tcp -m set --match-set $gfw_cidr_ipset dst -j REDIRECT --to-port "$proxy_port"
   # tproxy模式
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
     modprobe -a "xt_TPROXY"  >/dev/null 2>&1
@@ -51,23 +48,17 @@ add_nat(){
   iptables -t mangle -A "$mangle_name" -d 224.0.0.0/4 -j RETURN
   iptables -t mangle -A "$mangle_name" -d 240.0.0.0/4 -j RETURN
   iptables -t mangle -A "$mangle_name" -d 255.255.255.255/32 -j RETURN
-#  iptables -t mangle -A "$mangle_name" -m mark --mark 255 -j RETURN
-
   iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+
   iptables -t mangle -A PREROUTING -j "$mangle_name"
-#  iptables -t mangle -A PREROUTING -i br0 -j "$mangle_name"
+
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
   LOGGER 删除iptables开始 >> $LOG_FILE
-#	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=" | sort -r)
-#  for ipset_index in $ipset_indexs; do
-#    iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
-#  done
-
   #tproxy模式
   ip rule del fwmark 10 table 100 >/dev/null 2>&1
   ip route del local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1
