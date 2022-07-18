@@ -5,14 +5,14 @@ source /koolshare/clashg/base.sh
 clash_sub_file="${clashg_dir}/clash.yaml_sub.new" #订阅转换回来的配置
 
 failed_warning_clash(){
-	LOGGER "本地获取文件失败！！！" >> $LOG_FILE
-	sc_process=$(pidof subconverter)
-	if [ -n "$sc_process" ]; then
-		LOGGER 关闭subconverter进程... >> $LOG_FILE
-		killall subconverter >/dev/null 2>&1
-	fi
-	LOGGER "===================================================================" >> $LOG_FILE
-	exit 1
+  LOGGER "本地获取文件失败！！！" >> $LOG_FILE
+  sc_process=$(pidof subconverter)
+  if [ -n "$sc_process" ]; then
+    LOGGER 关闭subconverter进程... >> $LOG_FILE
+    killall subconverter >/dev/null 2>&1
+  fi
+  LOGGER "===================================================================" >> $LOG_FILE
+  exit 1
 }
 
 start_online_update_hnd(){
