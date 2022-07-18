@@ -62,7 +62,7 @@ add_nat(){
   LOGGER "iptables 建立完成" >> $LOG_FILE
 }
 rm_nat(){
-	LOGGER 删除iptables开始 >> $LOG_FILE
+  LOGGER 删除iptables开始 >> $LOG_FILE
 #	ipset_indexs=$(iptables -t nat -vnL PREROUTING --line-number  | sed 1,2d | sed -n "/${proxy_port}/=" | sort -r)
 #  for ipset_index in $ipset_indexs; do
 #    iptables -t nat -D PREROUTING $ipset_index >/dev/null 2>&1
@@ -177,8 +177,8 @@ rm_dnsmasq_gfwlist(){
 
 prepare_start(){
   add_ipset
-	add_dnsmasq_gfwlist
-	add_nat
+  add_dnsmasq_gfwlist
+  add_nat
   restart_dnsmasq
   add_cron
 }
@@ -199,20 +199,20 @@ restart_dnsmasq(){
 #	for d in $dnsmasqpid; do
 #		procs=$(($procs+1))
 #	done
-	LOGGER "重启后dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
+  LOGGER "重启后dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
 }
 
 start_clash(){
   LOGGER "启动Clash程序" >> $LOG_FILE
-	$clashg_dir/clash -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
-	LOGGER "启动Clash程序完毕，Clash启动日志位置：/tmp/clashg_run.log" >> $LOG_FILE
-	#检查clash进程
-	LOGGER "默认检查日志延迟时间:2秒" >> $LOG_FILE
+  $clashg_dir/clash -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
+  LOGGER "启动Clash程序完毕，Clash启动日志位置：/tmp/clashg_run.log" >> $LOG_FILE
+  #检查clash进程
+  LOGGER "默认检查日志延迟时间:2秒" >> $LOG_FILE
   sleep 2s
 
-	if [ ! -z "$(pidof clash)" -a ! -z "$(netstat -anp | grep clash)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
-		LOGGER "Clash 进程启动成功！(PID: $(pidof clash))"
-	else
+  if [ ! -z "$(pidof clash)" -a ! -z "$(netstat -anp | grep clash)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
+    LOGGER "Clash 进程启动成功！(PID: $(pidof clash))"
+  else
     LOGGER "Clash 进程启动失败！请检查配置文件是否存在问题，即将退出" >> $LOG_FILE
     LOGGER "Clash 进程启动失败！请查看日志检查原因" >> $LOG_FILE
     LOGGER "失败原因：" >> $LOG_FILE
@@ -234,7 +234,7 @@ start_clash(){
     sleep 2s
     prepare_stop
     stop_clash
-	fi
+  fi
 }
 
 stop_clash(){
