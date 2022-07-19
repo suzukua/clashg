@@ -63,6 +63,10 @@ rm_nat(){
   ip rule del fwmark 10 table 100 >/dev/null 2>&1
   ip route del local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1
   #删除
+  ipset_indexs=$(iptables -t mangle -L PREROUTING --line-number | sed 1,2d | sed -n "/${mangle_name}/=" | sort -r)
+  for ipset_index in $ipset_indexs; do
+    iptables -t mangle -D PREROUTING $ipset_index >/dev/null 2>&1
+  done
   iptables -t mangle -D PREROUTING -j "$mangle_name" >/dev/null 2>&1
   #清空
   iptables -t mangle -F "$mangle_name" >/dev/null 2>&1

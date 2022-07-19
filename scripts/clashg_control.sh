@@ -22,12 +22,30 @@ get_config_file(){
   fi
   cat $clash_edit_file | base64_encode
 }
+
 save_config_file(){
   local config_file_base64=$1
   echo -n ${config_file_base64} | base64_decode > $clash_edit_file
+  if [ -f "$clash_sub_file" ]; then
+    # 合并配置
+    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+  fi
 }
+
 reset_config_file(){
   cp $clash_ro_file $clash_edit_file
+  if [ -f "$clash_sub_file" ]; then
+    # 合并配置
+    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+  fi
+}
+
+get_run_config_file(){
+  local file_content="暂无运行配置，请先订阅"
+  if [ -f $clash_file ]; then
+      file_content=$(cat $clash_file)
+  fi
+  echo "$file_content" | base64_encode
 }
 
 get_status(){
@@ -152,6 +170,10 @@ do_action() {
     ;;
     get_status)
       ret_data=$(get_status)
+      response_json "$1" "\"$ret_data\"" "ok"
+    ;;
+    get_run_config_file)
+      ret_data=$(get_run_config_file)
       response_json "$1" "\"$ret_data\"" "ok"
     ;;
   esac

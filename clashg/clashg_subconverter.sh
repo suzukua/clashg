@@ -2,8 +2,6 @@
 source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 
-clash_sub_file="${clashg_dir}/clash.yaml_sub.new" #订阅转换回来的配置
-
 failed_warning_clash(){
   LOGGER "本地获取文件失败！！！" >> $LOG_FILE
   sc_process=$(pidof subconverter)

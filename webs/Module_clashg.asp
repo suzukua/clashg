@@ -434,10 +434,21 @@
         }
 
         function switch_edit_filecontent() {
-            // $j("#loadingIcon").show();
             apply_action("get_config_file", "2", function(data){
                 set_edit_content(data)
-                // $j("#loadingIcon").hide();
+            });
+        }
+        function load_run_config_file(){
+            apply_action("get_run_config_file", "2", function(data){
+                var filecontent = Base64.decode(data);
+                if (filecontent == "") {
+                    // 文件内容为空
+                    console.log("文件内容为空");
+                    return false;
+                }
+                // 设置当前textarea的内容为 file_content
+                $j("#clash_run_config_content").val(filecontent);
+                show_result("配置文件加载成功!", 1000);
             });
         }
 
@@ -492,6 +503,7 @@
                         <button id="btn_config_tab" class="tab" onclick="switch_tabs(event, 'menu_config');switch_edit_filecontent();">在线编辑</button>
                         <button id="btn_option_tab" class="tab" onclick="switch_tabs(event, 'menu_options');">资源配置</button>
                         <button id="btn_log_tab" class="tab" onclick="switch_tabs(event, 'menu_log');show_status()">日志信息</button>
+                        <button id="btn_run_config_tab" class="tab" onclick="switch_tabs(event, 'menu_run_config');load_run_config_file()">运行配置</button>
 <!--                        <button id="btn_help_tab" class="tab" onclick="switch_tabs(event, 'menu_help');">帮助信息</button>-->
                     </div>
 
@@ -603,7 +615,7 @@
                     <table id="menu_config" class="FormTable">
                         <thead>
                             <tr>
-                                <td colspan="3">ClashG - 配置文件编辑 【保存并且重新订阅之后重启才生效】</td>
+                                <td colspan="3">ClashG - 配置文件编辑 【保存之后手动重启才生效】</td>
                             </tr>
                         </thead>
                         <tr>
@@ -630,6 +642,20 @@
                             <td colspan="2">
                                 <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">日志信息</p>
                                 <textarea rows="20 " wrap="off" readonly="readonly" id="clash_log_backup" class="input_text"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- 当前配置 -->
+                    <table id="menu_run_config" class="FormTable">
+                        <thead>
+                            <tr>
+                                <td colspan="3">ClashG - 当前运行配置</td>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td colspan="2">
+                                <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
+                                <textarea id="clash_run_config_content" readonly="true" rows="20" class="input_text" style="width: 98%;"></textarea>
                             </td>
                         </tr>
                     </table>
