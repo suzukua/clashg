@@ -26,18 +26,10 @@ get_config_file(){
 save_config_file(){
   local config_file_base64=$1
   echo -n ${config_file_base64} | base64_decode > $clash_edit_file
-  if [ -f "$clash_sub_file" ]; then
-    # 合并配置
-    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
-  fi
 }
 
 reset_config_file(){
   cp $clash_ro_file $clash_edit_file
-  if [ -f "$clash_sub_file" ]; then
-    # 合并配置
-    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
-  fi
 }
 
 get_run_config_file(){
@@ -99,12 +91,24 @@ get_status(){
 
   echo "$clash_status;$gfw_status;$ipset_status;$iptables_status;$netstat_status"
 }
+
+merge_run_yaml(){
+  LOGGER "合并配置到${clash_file}" >> $LOG_FILE
+  #自定义配置文件不存在则从原厂配置copy一份
+  if [ ! -f $clash_edit_file ]; then
+    cp $clash_ro_file $clash_edit_file
+  fi
+  $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+  LOGGER "合并配置完成" >> $LOG_FILE
+}
+
 do_action() {
   ACTION="$2"
   case $ACTION in
     start)
       if [ "$clashg_enable" == "on" ]; then
         echo > $LOG_FILE #重置日志
+        merge_run_yaml
         sh $clashg_dir/clashconfig.sh start
         ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
         [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
@@ -162,6 +166,7 @@ do_action() {
         LOGGER "定时更新开始"
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
+        merge_run_yaml
         #更新订阅
         [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
         sh $clashg_dir/clashconfig.sh start

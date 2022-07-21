@@ -26,7 +26,7 @@ auto_start() {
 }
 
 add_nat(){
-  if [ "${clashg_mixed_port_status}" == "on" ]; then
+  if [ "${clashg_mixed_port_status}" == "on" -a -n "$mixedport" ]; then
     LOGGER "开启mixed-port: ${mixedport}公网访问" >> $LOG_FILE
     iptables -I INPUT -p tcp --dport $mixedport -j ACCEPT
     ip6tables -I INPUT -p tcp --dport $mixedport -j ACCEPT
@@ -74,14 +74,16 @@ rm_nat(){
   iptables -t mangle -X "$mangle_name" >/dev/null 2>&1
 
   # 清理mixedport端口
-  ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
-  for ipset_index in $ipset_indexs; do
-    iptables -D INPUT $ipset_index >/dev/null 2>&1
-  done
-  ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
-  for ipset_index in $ipset_indexs; do
-    ip6tables -D INPUT $ipset_index >/dev/null 2>&1
-  done
+  if [ -n "$mixedport" ]; then
+    ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
+    for ipset_index in $ipset_indexs; do
+      iptables -D INPUT $ipset_index >/dev/null 2>&1
+    done
+    ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${mixedport}/=" | sort -r)
+    for ipset_index in $ipset_indexs; do
+      ip6tables -D INPUT $ipset_index >/dev/null 2>&1
+    done
+  fi
   LOGGER 删除iptables完成 >> $LOG_FILE
 }
 add_ipset(){

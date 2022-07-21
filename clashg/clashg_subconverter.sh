@@ -38,8 +38,6 @@ start_online_update_hnd(){
     if [ -z "$(cat $clash_sub_file)" ];then
       LOGGER "获取clash配置文件失败！" >> $LOG_FILE
       failed_warning_clash
-    else
-      merge
     fi
   else
     LOGGER "下载超时" >> $LOG_FILE
