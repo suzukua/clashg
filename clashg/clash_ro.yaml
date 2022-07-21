@@ -1,5 +1,7 @@
 mixed-port: 10808
 #redir-port: 23457
+inbound-tfo: true
+outbound-tfo: true #DNS&PROXY出站支持TFO
 allow-lan: true
 tproxy: true
 tproxy-port: 23458
