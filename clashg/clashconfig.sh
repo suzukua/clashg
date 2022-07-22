@@ -294,7 +294,7 @@ enable_tfo(){
   if [ "$inbound_tfo" == "true" -a -f "/proc/sys/net/ipv4/tcp_fastopen" ]; then
     fastopen_status=$(cat /proc/sys/net/ipv4/tcp_fastopen)
     if [ "$fastopen_status" -ne "3" -o "$fastopen_status" -ne "2" ]; then
-      echo 2 > /proc/sys/net/ipv4/tcp_fastopen
+      echo 3 > /proc/sys/net/ipv4/tcp_fastopen
       LOGGER "已经配置系统TFO参数" >> $LOG_FILE
     fi
   fi
