@@ -178,6 +178,7 @@ prepare_start(){
   add_nat
   restart_dnsmasq
   add_cron
+  enable_tfo
 }
 prepare_stop(){
   rm_dnsmasq_gfwlist
@@ -287,6 +288,16 @@ rm_all_cron(){
   del_cron_job clashg_update_rule_sub_restart_cron
   del_cron_job clashg_update_geoip_cron
   LOGGER "定时任务清理完成" >> $LOG_FILE
+}
+
+enable_tfo(){
+  if [ "$inbound_tfo" == "true" -a -f "/proc/sys/net/ipv4/tcp_fastopen" ]; then
+    fastopen_status=$(cat /proc/sys/net/ipv4/tcp_fastopen)
+    if [ "$fastopen_status" -ne "3" -o "$fastopen_status" -ne "2" ]; then
+      echo 2 > /proc/sys/net/ipv4/tcp_fastopen
+      LOGGER "已经配置系统TFO参数" >> $LOG_FILE
+    fi
+  fi
 }
 
 apply() {
