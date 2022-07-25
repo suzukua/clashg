@@ -26,12 +26,8 @@ dns:
     - https://223.6.6.6/dns-query
   enhanced-mode: redir-host
   nameserver:
-#   节点默认地址
-    - quic://i.passcloud.xyz:784
-#   南方广州 BGP 节点
-    - quic://c.passcloud.xyz:784
     - tls://dns.google
-#   opendns
+    - https://cloudflare-dns.com/dns-query
     - tcp://208.67.222.222:443
 #    【Meta专属】"#DNSg"代表该DNS服务器通过,名为"DNSg"的proxy Group访问
 #    - 'tls://8.8.4.4:853#DNSg'
