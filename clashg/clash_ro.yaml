@@ -26,10 +26,10 @@ dns:
     - https://223.6.6.6/dns-query
   enhanced-mode: redir-host
   nameserver:
-    - quic://a.passcloud.xyz:784
-#    - https://doh.dns.sb/dns-query
-    - tcp://208.67.222.222:443
+    - quic://i.passcloud.xyz:784  #节点默认地址
+    - quic://c.passcloud.xyz:784  #南方广州 BGP 节点：
     - tls://dns.google
+    - tcp://208.67.222.222:443  #opendns
 #    - 'tls://8.8.4.4:853#DNSg'       #【Meta专属】"#DNSg"代表该DNS服务器通过,名为"DNSg"的proxy Group访问
 
 sniffer:
