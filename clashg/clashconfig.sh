@@ -26,12 +26,12 @@ auto_start() {
 }
 
 add_nat(){
-  if [ "${clashg_mixed_port_status}" == "on" -a -n "$shadowsocksdport" ]; then
-    LOGGER "开启Shadowsocksdport: ${shadowsocksdport}公网访问" >> $LOG_FILE
-    iptables -I INPUT -p tcp --dport $shadowsocksdport -j ACCEPT
-    iptables -I INPUT -p udp --dport $shadowsocksdport -j ACCEPT
-    ip6tables -I INPUT -p tcp --dport $shadowsocksdport -j ACCEPT
-    ip6tables -I INPUT -p udp --dport $shadowsocksdport -j ACCEPT
+  if [ "${clashg_mixed_port_status}" == "on" -a -n "$shadowsocksport" ]; then
+    LOGGER "开启Shadowsocks: ${shadowsocksport}公网访问" >> $LOG_FILE
+    iptables -I INPUT -p tcp --dport $shadowsocksport -j ACCEPT
+    iptables -I INPUT -p udp --dport $shadowsocksport -j ACCEPT
+    ip6tables -I INPUT -p tcp --dport $shadowsocksport -j ACCEPT
+    ip6tables -I INPUT -p udp --dport $shadowsocksport -j ACCEPT
   fi
   # tproxy模式
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
@@ -75,13 +75,13 @@ rm_nat(){
   #删除
   iptables -t mangle -X "$mangle_name" >/dev/null 2>&1
 
-  # 清理shadowsocksdport端口
-  if [ -n "$shadowsocksdport" ]; then
-    ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksdport}/=" | sort -r)
+  # 清理shadowsocksport端口
+  if [ -n "$shadowsocksport" ]; then
+    ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksport}/=" | sort -r)
     for ipset_index in $ipset_indexs; do
       iptables -D INPUT $ipset_index >/dev/null 2>&1
     done
-    ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksdport}/=" | sort -r)
+    ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksport}/=" | sort -r)
     for ipset_index in $ipset_indexs; do
       ip6tables -D INPUT $ipset_index >/dev/null 2>&1
     done
