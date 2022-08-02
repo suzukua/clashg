@@ -596,7 +596,7 @@
                         </tr>
                         <tr>
                             <th>
-                                <label title="默认关闭，开放mixed-port公网访问(IPV4/IPV6)">公网开放mixed-port</label>
+                                <label title="默认关闭，开放Shadownsocks公网访问(IPV4/IPV6)">公网开放Shadownsocks</label>
                             </th>
                             <td colspan="2">
                                 <div class="switch_field">

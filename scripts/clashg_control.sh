@@ -62,9 +62,9 @@ get_status(){
     iptables_status="${iptables_status}状态:正常(${mangle_name}链已到mangle表添加)"
   fi
   if [ -f "$clash_file" ]; then
-    it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$mixedport")
-    it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$mixedport")
-    iptables_status="${iptables_status}-mixedport:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
+    it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$shadowsocksdport")
+    it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$shadowsocksdport")
+    iptables_status="${iptables_status}-Shadowsocksdport:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
   fi
 
   ipset_status="IPSET分流="
