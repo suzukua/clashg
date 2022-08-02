@@ -29,7 +29,9 @@ add_nat(){
   if [ "${clashg_mixed_port_status}" == "on" -a -n "$mixedport" ]; then
     LOGGER "开启mixed-port: ${mixedport}公网访问" >> $LOG_FILE
     iptables -I INPUT -p tcp --dport $mixedport -j ACCEPT
+    iptables -I INPUT -p udp --dport $mixedport -j ACCEPT
     ip6tables -I INPUT -p tcp --dport $mixedport -j ACCEPT
+    ip6tables -I INPUT -p udp --dport $mixedport -j ACCEPT
   fi
   # tproxy模式
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
