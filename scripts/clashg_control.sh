@@ -92,6 +92,22 @@ get_status(){
   echo "$clash_status;$gfw_status;$ipset_status;$iptables_status;$netstat_status"
 }
 
+#查询clash 面板信息
+get_board_info(){
+  if [ -f $clash_file ]; then
+    external=$($clashg_dir/yq r $clash_file "external-controller" | xargs echo -n)
+    if [ -n "$external" ]; then
+        ip=$(echo "$external" | cut -d : -f 1)
+        port=$(echo "$external" | cut -d : -f 2)
+        secret=$($clashg_dir/yq r $clash_file "secret" | xargs echo -n)
+        echo "{\"ip\":\"$ip\",\"port\":\"$port\",\"secret\":\"$secret\"}"
+        return 0
+    fi
+  fi
+  echo "{}"
+
+}
+
 merge_run_yaml(){
   LOGGER "合并配置到${clash_file}" >> $LOG_FILE
   #自定义配置文件不存在则从原厂配置copy一份
@@ -174,8 +190,9 @@ do_action() {
       fi
     ;;
     get_status)
-      ret_data=$(get_status)
-      response_json "$1" "\"$ret_data\"" "ok"
+      status_info=$(get_status)
+      board_info=$(get_board_info)
+      response_json "$1" "{\"status_info\":\"$status_info\", \"board_info\":$board_info}" "ok"
     ;;
     get_run_config_file)
       ret_data=$(get_run_config_file)

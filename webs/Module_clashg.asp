@@ -106,6 +106,8 @@
         var noChange = 0;
         var $j = jQuery.noConflict();
 
+        var clash_bord_info = {}
+
         function init() {
 	        show_menu(menu_hook);
             document.getElementById(localStorage.getItem('clashg_actived_tab') || "btn_default_tab").click();
@@ -128,12 +130,14 @@
         }
 
         function getStatus(){
-
             apply_action("get_status", 2, function(data){
-                if(data){
+                if(data && data.board_info){
+                    clash_bord_info = data.board_info
+                }
+                if(data && data.status_info){
                     //#返回clash=key:value-key:value;gfw=key:value-key:value
                     var trs = "";
-                    var statusGroups=data.split(";")
+                    var statusGroups=data.status_info.split(";")
                     for(let i = 0; i < statusGroups.length; i++) {
                       var statusGroupName = statusGroups[i].split("=")[0]
                       var th="<th><label>" + statusGroupName + "</label></th>"
@@ -467,6 +471,9 @@
             evt.preventDefault();
             E("clashg_geoip_url").value=evt.target.getAttribute('href')
         }
+        function open_clash_board(board_url){
+            window.open(board_url + '#/?host=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');
+        }
     </script>
 </head>
 
@@ -661,7 +668,7 @@
                     </table>
                     <!--打开 Clash控制面板-->
                     <div id="status_tools " style="margin-top: 25px; padding-bottom: 20px;">
-                        <button type="button" class="button_gen" id="clash_yacd_ui" onclick="window.open('http://clash.metacubex.one/', '_blank');" target="_blank">metacubex控制面板</button>
+                        <button type="button" class="button_gen" id="clash_yacd_ui" onclick="open_clash_board('http://clash.metacubex.one/');">metacubex控制面板</button>
                     </div>
 
                     <div>
