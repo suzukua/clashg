@@ -14,7 +14,8 @@ external-controller: 192.168.100.1:9990
 #external-ui: dashboard
 secret: "clash"
 profile:
-  store-selected: false
+  #节点状态记忆
+  store-selected: true
 ipv6: false
 #routing-mark: 255
 
