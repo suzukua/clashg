@@ -26,16 +26,26 @@ dns:
   enable: true
   ipv6: false
   listen: :23453
+  enhanced-mode: redir-host
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  enhanced-mode: redir-host
   nameserver:
+    - dhcp://ppp0
+  fallback:
     - tls://dns.google
     - https://cloudflare-dns.com/dns-query#h3=true
-    - tcp://208.67.222.222:443
-#    【Meta专属】"#DNSg"代表该DNS服务器通过,名为"DNSg"的proxy Group访问
-#    - 'tls://8.8.4.4:853#DNSg'
+  fallback-filter:                   #回落DNS服务器过滤
+    geoip: true                      #为真时，不匹配为geoip规则的使用fallback返回结果
+    geoip-code: CN                   #geoip匹配区域设定
+    ipcidr:                          #列表中的ip使用fallback返回解析结果
+      - 240.0.0.0/4
+      - 0.0.0.0/8
+      - 127.0.0.0/8
+    domain:                          #列表中的域名使用fallback返回解析结果
+      - '+.google.com'
+      - '+.facebook.com'
+      - '+.youtube.com'
 
 sniffer:
   enable: true
