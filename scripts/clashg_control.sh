@@ -41,8 +41,8 @@ get_run_config_file(){
 }
 
 get_status(){
-  #返回clash=key:value-key:value;gfw=key:value-key:value
-  clash_status="Clash="
+  #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
+  clash_status="{\"key\":\"Clash\",\"value\":\""
   clashpid="$(pidof clash)"
   if [ -z "$clashpid" ]; then
     clash_status="${clash_status}启动状态:不正常"
@@ -52,8 +52,9 @@ get_status(){
   if [ ! -f "$clash_file" ]; then
     clash_status="${clash_status}-clash.yaml:不存在"
   fi
+  clash_status="${clash_status}\"}"
 
-  iptables_status="IPTABLES="
+  iptables_status="{\"key\":\"IPTABLES\",\"value\":\""
   iptables_count=$(iptables -t mangle -vnL PREROUTING --line-number |grep -c "$mangle_name")
 #  iptables_count=$(iptables -t nat -vnL PREROUTING --line-number |grep -c "$proxy_port")
   if [ "$iptables_count" -ne "1" ]; then
@@ -64,32 +65,37 @@ get_status(){
   if [ -f "$clash_file" ]; then
     it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$shadowsocksport")
     it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$shadowsocksport")
-    iptables_status="${iptables_status}-Shadowsocks:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
+    iptables_status="${iptables_status},Shadowsocks:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
   fi
+  iptables_status="${iptables_status}\"}"
 
-  ipset_status="IPSET分流="
+  ipset_status="{\"key\":\"IPSET分流\",\"value\":\""
   ipset_txt=$(ipset list|grep "$gfw_cidr_ipset")
   if [ -z "$ipset_txt" ]; then
     ipset_status="${ipset_status}状态:不正常(${gfw_cidr_ipset}未创建)"
   else
     ipset_file_count=$(head -n 1 $ipcidr_file  | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
+    rule_update=$(head -n 2 $ipcidr_file | tail -1  | awk -F 'on:' '/^#\ Updated\ on:/{print $2}' | xargs echo -n)
     ipset_import_count=$(ipset list "$gfw_cidr_ipset" | grep -c "/")
-    ipset_status="${ipset_status}状态:正常(ipset已导入${ipset_import_count}行, ipset文件${ipset_file_count}行)"
+    ipset_status="${ipset_status}状态:正常(ipset已导入${ipset_import_count}行, ipset文件${ipset_file_count}行($rule_update))"
   fi
+  ipset_status="${ipset_status}\"}"
 
-  gfw_status="GFW域名分流="
+  gfw_status="{\"key\":\"GFW域名分流\",\"value\":\""
   if [ -f /jffs/configs/dnsmasq.d/clashg_gfw.conf  ]; then
     gfw_rows=$(head -n 1 /jffs/configs/dnsmasq.d/clashg_gfw.conf | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
-    gfw_status="${gfw_status}文件挂载:正常(${gfw_rows}条)"
+    gfw_rule_update=$(head -n 2 /jffs/configs/dnsmasq.d/clashg_gfw.conf | tail -1 | awk -F 'on:' '/^#\ Updated\ on:/{print $2}' | xargs echo -n)
+    gfw_status="${gfw_status}文件挂载:正常(${gfw_rows}条($gfw_rule_update))"
   else
     gfw_status="${gfw_status}文件挂载:不正常"
   fi
+  gfw_status="${gfw_status}\"}"
 
   clash_tcp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep tcp -c)
   clash_udp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep udp -c)
-  netstat_status="NETSTAT连接数=TCP:${clash_tcp_count}条-UDP:${clash_udp_count}条"
+  netstat_status="{\"key\":\"NETSTAT连接数\",\"value\":\"TCP:${clash_tcp_count}条,UDP:${clash_udp_count}条\"}"
 
-  echo "$clash_status;$gfw_status;$ipset_status;$iptables_status;$netstat_status"
+  echo "[$clash_status,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"
 }
 
 #查询clash 面板信息
@@ -192,7 +198,7 @@ do_action() {
     get_status)
       status_info=$(get_status)
       board_info=$(get_board_info)
-      response_json "$1" "{\"status_info\":\"$status_info\", \"board_info\":$board_info}" "ok"
+      response_json "$1" "{\"status_info\":$status_info, \"board_info\":$board_info}" "ok"
     ;;
     get_run_config_file)
       ret_data=$(get_run_config_file)

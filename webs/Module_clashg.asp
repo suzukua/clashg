@@ -135,24 +135,13 @@
                     clash_bord_info = data.board_info
                 }
                 if(data && data.status_info){
-                    //#返回clash=key:value-key:value;gfw=key:value-key:value
+//                     #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
                     var trs = "";
-                    var statusGroups=data.status_info.split(";")
+                    var statusGroups=data.status_info
                     for(let i = 0; i < statusGroups.length; i++) {
-                      var statusGroupName = statusGroups[i].split("=")[0]
+                      var statusGroupName = statusGroups[i].key
                       var th="<th><label>" + statusGroupName + "</label></th>"
-                      var statusItems = statusGroups[i].split("=")[1]
-                      var td = "<td></td>";
-                      if(statusItems){
-                          var statusItem = statusItems.split("-")
-                          var td = "<td>"
-                          for(let j = 0; j < statusItem.length; j++) {
-                            var statusKey = statusItem[j].split(":")[0]
-                            var statusVakye = statusItem[j].split(":")[1]
-                            td += statusKey + " : " + statusVakye + "<br>";
-                          }
-                          td += "</td>"
-                      }
+                      var td = "<td>" + statusGroups[i].value + "</td>";
                       trs += "<tr js_add>" + th + td + "</tr>"
                     }
                     $j("tr[js_add]").remove()
