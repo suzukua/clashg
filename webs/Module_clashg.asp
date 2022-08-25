@@ -397,10 +397,11 @@
                 return false;
             }
             var base64_content = Base64.encode(content);
-            apply_action("save_config_file " + base64_content, "2", function() {
+            //临时保存到dbus，保存完毕删除
+            apply_action("save_config_file", "2", function() {
                 show_result("保存文件内容成功!");
                 switch_edit_filecontent()//重新获取配置文件
-            });
+            }, {"clashg_yaml_edit_content": base64_content});
             // 设置readonly属性为true
             $j("#clash_config_content").attr("readonly", true);
         }

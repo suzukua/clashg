@@ -47,7 +47,7 @@ get_status(){
   if [ -z "$clashpid" ]; then
     clash_status="${clash_status}启动状态:不正常"
   else
-    clash_status="${clash_status}启动状态:正常(pid>${clashpid})"
+    clash_status="${clash_status}启动状态:正常,pid>${clashpid}"
   fi
   if [ ! -f "$clash_file" ]; then
     clash_status="${clash_status}-clash.yaml:不存在"
@@ -65,7 +65,7 @@ get_status(){
   if [ -f "$clash_file" ]; then
     it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$shadowsocksport")
     it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$shadowsocksport")
-    iptables_status="${iptables_status},Shadowsocks:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
+    iptables_status="${iptables_status}</br>Shadowsocks:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
   fi
   iptables_status="${iptables_status}\"}"
 
@@ -77,7 +77,7 @@ get_status(){
     ipset_file_count=$(head -n 1 $ipcidr_file  | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
     rule_update=$(head -n 2 $ipcidr_file | tail -1  | awk -F 'on:' '/^#\ Updated\ on:/{print $2}' | xargs echo -n)
     ipset_import_count=$(ipset list "$gfw_cidr_ipset" | grep -c "/")
-    ipset_status="${ipset_status}状态:正常(ipset已导入${ipset_import_count}行, ipset文件${ipset_file_count}行($rule_update))"
+    ipset_status="${ipset_status}状态:正常,ipset已导入${ipset_import_count}行,ipset文件${ipset_file_count}行($rule_update)"
   fi
   ipset_status="${ipset_status}\"}"
 
@@ -85,7 +85,7 @@ get_status(){
   if [ -f /jffs/configs/dnsmasq.d/clashg_gfw.conf  ]; then
     gfw_rows=$(head -n 1 /jffs/configs/dnsmasq.d/clashg_gfw.conf | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
     gfw_rule_update=$(head -n 2 /jffs/configs/dnsmasq.d/clashg_gfw.conf | tail -1 | awk -F 'on:' '/^#\ Updated\ on:/{print $2}' | xargs echo -n)
-    gfw_status="${gfw_status}文件挂载:正常(${gfw_rows}条($gfw_rule_update))"
+    gfw_status="${gfw_status}文件挂载:正常,${gfw_rows}条($gfw_rule_update)"
   else
     gfw_status="${gfw_status}文件挂载:不正常"
   fi
@@ -156,7 +156,9 @@ do_action() {
       response_json "$1" "\"$ret_data\"" "ok"
     ;;
     save_config_file)
-      save_config_file $3
+      save_config_file "$(get clashg_yaml_edit_content)"
+      #临时保存到dbus，保存完毕删除
+      dbus remove clashg_yaml_edit_content
       response_json "$1" "\"\"" "ok"
     ;;
     reset_config_file)
@@ -208,10 +210,10 @@ do_action() {
 }
 
 echo >> $LOG_FILE
+LOGGER $1 "=========ACTION=========" $2 "====" $3 >> $LOG_FILE
 if [ "$1" == "start" -o "$1" == "start_nat" ]; then
   do_action -1 $@ 2>&1 | tee -a $LOG_FILE
 else
   do_action $@ 2>&1 | tee -a $LOG_FILE
 fi
-
 echo "XU6J03M6" >> $LOG_FILE
