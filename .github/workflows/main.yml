@@ -16,7 +16,7 @@ jobs:
       - name: build
         run: |
            mkdir /home/runner/work/publish/
-           sed "s/\:.*/:$(shell git describe --tags)/" clashg/version
+           sed "s/\:.*/:$(git describe --tags)/" clashg/version
            cat clashg/version
            ls -lah
            cd ..
