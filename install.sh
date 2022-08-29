@@ -135,7 +135,7 @@ get_fw_type() {
 remove_files() {
     if [ -d "/koolshare/${app_name}" ] ; then
         LOGGER 开始 清理旧文件
-        rm -rf /koolshare/${app_name}
+        rm -rf `ls /koolshare/${app_name}/ | grep -v custom_`
         rm -rf /koolshare/scripts/${app_name}_*
         rm -rf /koolshare/res/icon-${app_name}.png
         rm -rf /koolshare/webs/Module_${app_name}.asp
@@ -254,7 +254,7 @@ main() {
     need_action start # 是否需要重启服务
     clean               # 清理安装包
 
-    LOGGER Clash版科学上网插件安装成功！
+    LOGGER ClashG版科学上网插件安装成功！
     LOGGER "忠告: Clash运行时分配很大虚拟内存，可能在700MB左右, 如果你的内存很小，那么启动失败的概率很大！"
     LOGGER "解决办法是：用U盘挂载1GB的虚拟内存!切记！"
     LOGGER "如何挂载虚拟内存? 软件中心自带 虚拟内存 插件，安装即用！"

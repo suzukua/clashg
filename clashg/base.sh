@@ -3,9 +3,9 @@ clashg_dir=/koolshare/clashg
 LOG_FILE=/tmp/upload/clashglog.txt
 
 clash_ro_file="${clashg_dir}/clash_ro.yaml" #原厂配置
-clash_edit_file="${clashg_dir}/clash_edit.yaml" #修改的配置
+clash_edit_file="${clashg_dir}/custom_clash_edit.yaml" #修改的配置
 clash_file="${clashg_dir}/clash.yaml" #程序运行时的配置
-clash_sub_file="${clashg_dir}/clash.yaml_sub.new" #订阅转换回来的配置
+clash_sub_file="${clashg_dir}/custom_clash_sub.yaml" #订阅转换回来的配置
 
 github_proxy="https://ghproxy.com/"
 CURL_OPTS="-s -k"
