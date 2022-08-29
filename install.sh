@@ -24,7 +24,7 @@ BUILD_VERSION="$(nvram get buildno| cut -d '.' -f1)"
 LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')  # Linux内核版本
 
 # 反馈问题链接
-open_issue="请将安装过程日志内容(上面的所有内容)复制好后反馈给开发者,以便于帮您找到安装失败原因！反馈地址: https://github.com/learnhard-cn/vClash/issues/"
+open_issue="请将安装过程日志内容(上面的所有内容)复制好后反馈给开发者,以便于帮您找到安装失败原因！反馈地址: https://github.com/zhudan/clashg/issues"
 
 LOGGER() {
     logger -s -t "【`date +'%Y年%m月%d日 %H:%M:%S'`】:clashg" "$@"
