@@ -1,10 +1,10 @@
-name: 构建
+name: Release
 
 on:
   workflow_dispatch:
   push:
-    branches:
-    - main
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -24,15 +24,11 @@ jobs:
            echo ~
            ls -lah ~/work/clashg/clashg.tar.gz
            mv ~/work/clashg/clashg.tar.gz /home/runner/work/publish/
-           
-      - name: release
-        run: |
-          cd /home/runner/work/publish/ || exit 1
-          git init
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b release
-          git add .
-          git commit -m "release"
-          git remote add release "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-          git push -f release release     
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ success() && startsWith(github.ref, 'refs/tags/')}}
+        with:
+          tag: ${{ github.ref }}
+          files: /home/runner/work/publish/*
+          generate_release_notes: true
