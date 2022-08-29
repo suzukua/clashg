@@ -212,17 +212,7 @@ init_env() {
     # 默认不启用
     [ -z "$(eval echo '$'${app_name}_enable)" ] && dbus set ${app_name}_enable="off"
 
-#    dbus set clash_provider_file="$(echo -n https://raw.githubusercontent.com/learnhard-cn/free_proxy_ss/main/clash/providers/provider_free.yaml|base64_encode)"
-#    dbus set clash_geoip_url="https://raw.githubusercontent.com/alecthw/mmdb_china_ip_list/release/Country.mmdb"
-#    dbus set clash_trans="on"           # 默认开启透明代理模式
-#    dbus set clash_rule_mode="blacklist" # 默认为黑名单模式
-#    dbus set clash_cfddns_enable="off"  # 默认关闭DDNS解析
-#    dbus set clash_ipv6_mode="off"      # 默认关闭IPv6模式
-
     ClashG_VERSION=$(sed -n '1p' /koolshare/${app_name}/version| cut -d: -f2)
-#    CLASH_VERSION=$(sed -n '2p' /koolshare/${app_name}/version| cut -d: -f2)
-#    dbus set ${app_name}_version="$CLASH_VERSION"
-
     # 离线安装时设置软件中心内储存的版本号和连接
     dbus set softcenter_module_${app_name}_install="1"
     dbus set softcenter_module_${app_name}_version="$ClashG_VERSION"
