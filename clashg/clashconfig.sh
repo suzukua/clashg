@@ -90,7 +90,7 @@ rm_nat(){
 }
 add_ipset(){
   #创建名为gfwlist，格式为iphash的集合
-  ipset -N $dnsmasq_gfw_ipset hash:ip timeout 1800
+  ipset -N $dnsmasq_gfw_ipset hash:ip timeout 300
   add_cidr_proxy
   LOGGER "ipset 建立完成" >> $LOG_FILE
 }
