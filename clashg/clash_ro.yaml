@@ -35,6 +35,7 @@ dns:
   fallback:
     - https://doh.dns.sb/dns-query
     - tcp://208.67.222.222:443
+    - tls://dns.google
     - quic://a.passcloud.xyz:784
   fallback-filter:                   #回落DNS服务器过滤
     geoip: true                      #为真时，不匹配为geoip规则的使用fallback返回结果
