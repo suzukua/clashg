@@ -180,7 +180,7 @@ do_action() {
       ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
       response_json "$1" "$ret_data" "ok"
     ;;
-    update_cron|set_mixed_port_status)
+    update_cron|set_mixed_port_status|save_clashg_gfw_file)
       ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
       response_json "$1" "$ret_data" "ok"
     ;;

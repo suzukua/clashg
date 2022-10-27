@@ -156,6 +156,7 @@
             E("clashg_subscribe_args").value = dbus["clashg_subscribe_args"] || "";
             E("clashg_update_rule_sub_restart_cron").value = Base64.decode(dbus["clashg_update_rule_sub_restart_cron"] || "");
             E("clashg_update_geoip_cron").value = Base64.decode(dbus["clashg_update_geoip_cron"] || "");
+            E("clashg_gfw_file").value = dbus["clashg_gfw_file"];
         }
 
         //提交任务方法,实时日志显示
@@ -372,6 +373,12 @@
             // $j("#loadingIcon").show();
             apply_action("update_dns_ipset_rule", "0", null);
         }
+        function update_gfw_file(){
+            dbus["clashg_gfw_file"] = document.getElementById("clashg_gfw_file").value
+            apply_action("save_clashg_gfw_file", "2", null, {
+                            "clashg_gfw_file": dbus["clashg_gfw_file"]
+                        });
+        }
         function subscribe(){
             // $j("#loadingIcon").show();
             dbus["clashg_subscribe_args"] = document.getElementById("clashg_subscribe_args").value
@@ -552,8 +559,20 @@
                                    参考subconverter参数
                                 </span>
                                 <br>
-                                <input style="width: 65%;" type="text" class="input_text" id="clashg_subscribe_args" placeholder="参考subconverter参数:target=clash&new_name=true&url=$link&config=${configlink}">
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_subscribe_args" placeholder="参考subconverter参数:target=clash&new_name=true&url=$link&config=${configlink}">
                                 <button type="button" class="button_gen" onclick="subscribe()" href="javascript:void(0);">订阅</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                GFW列表选择
+                            </th>
+                            <td>
+                                <select id="clashg_gfw_file" class="input_option" style="width:67%">
+                                    <option value="gfw_file_full" checked>GFW全</option>
+                                    <option value="gfw_file_lite">GFW精简</option>
+                                </select>
+                                 <button type="button" class="button_gen" onclick="update_gfw_file()" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
                         <tr>
@@ -575,10 +594,10 @@
                                     2. Loyalsoldier精简版(200KB左右，默认使用)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp;  <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a><br>
                                     4. Loyalsoldier版(5MB左右)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp; <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a>
                                 </span>
-                                <input style="width: 65%;" type="text" class="input_text" id="clashg_geoip_url" placeholder="自定义GeoIP数据下载地址">
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_geoip_url" placeholder="自定义GeoIP数据下载地址">
                                 <button type="button" class="button_gen" onclick="update_geoip()" href="javascript:void(0);">更新</button>
                                 <br>
-                                <input style="width: 65%;" type="text" class="input_text" id="clashg_update_geoip_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_geoip_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
                                 <button type="button" class="button_gen" onclick="update_cron('clashg_update_geoip_cron')" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
@@ -587,7 +606,7 @@
                                 <label title="定时更新并且重启" class="hintstyle">定时更新gfw、ipcidr、订阅并重启</label>
                             </th>
                             <td>
-                                <input style="width: 65%;" type="text" class="input_text" id="clashg_update_rule_sub_restart_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_rule_sub_restart_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
                                 <button type="button" class="button_gen" onclick="update_cron('clashg_update_rule_sub_restart_cron')" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
@@ -618,7 +637,7 @@
                         <tr>
                             <td colspan="2">
                                 <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
-                                <textarea id="clash_config_content" readonly="true" rows="20" class="input_text" style="width: 98%;" title="为了防止误编辑，默认为只读，点击编辑后才可修改哦！&#010;快捷键Ctrl+S: 保存.&#010;快捷键Ctrl+E: 编辑.&#010;快捷键Ctrl+R: 重新加载。"></textarea>
+                                <textarea id="clash_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%;" title="为了防止误编辑，默认为只读，点击编辑后才可修改哦！&#010;快捷键Ctrl+S: 保存.&#010;快捷键Ctrl+E: 编辑.&#010;快捷键Ctrl+R: 重新加载。"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -638,7 +657,7 @@
                         <tr id="logBackup">
                             <td colspan="2">
                                 <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">日志信息</p>
-                                <textarea rows="20 " wrap="off" readonly="readonly" id="clash_log_backup" class="input_text"></textarea>
+                                <textarea rows="20" style="width:98%" wrap="off" readonly="readonly" id="clash_log_backup" class="textarea_ssh_table"></textarea>
                             </td>
                         </tr>
                     </table>
@@ -652,7 +671,7 @@
                         <tr>
                             <td colspan="2">
                                 <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
-                                <textarea id="clash_run_config_content" readonly="true" rows="20" class="input_text" style="width: 98%;"></textarea>
+                                <textarea id="clash_run_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%;"></textarea>
                             </td>
                         </tr>
                     </table>
@@ -671,7 +690,7 @@
 
                     <div id="logMsg" style="display: none;">
                         <div>显示日志信息</div>
-                        <textarea rows="20 " wrap="off" readonly="readonly" id="clash_log_msg" class="input_text"></textarea>
+                        <textarea rows="20" wrap="off" readonly="readonly" id="clash_log_msg" class="textarea_ssh_table" style="width:98%"></textarea>
                     </div>
 
                 </div>

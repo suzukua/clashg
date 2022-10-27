@@ -6,6 +6,7 @@ source /koolshare/clashg/base.sh
 clashg_update_geoip_cron_base64=$(get clashg_update_geoip_cron)
 clashg_update_rule_sub_restart_cron_base64=$(get clashg_update_rule_sub_restart_cron)
 clashg_mixed_port_status=$(get clashg_mixed_port_status)
+clashg_gfw_file=$(get clashg_gfw_file)
 
 LOCK_FILE=/var/lock/clashg.lock
 
@@ -115,6 +116,10 @@ download_res_if_need(){
   #强制下载，或者文件不存在时下载
   force_download=$1
   if [ -n "$force_download" ] || [ ! -f "$gfw_file" ]; then
+    remote_gfw_conf="$remote_gfw_conf_full"
+    if [ "$clashg_gfw_file" = "gfw_file_lite" ]; then
+        remote_gfw_conf="$remote_gfw_conf_lite"
+    fi
     #github增加代理
     local remote_gfw_url_tmp=$(get_direct_url "${remote_gfw_conf}")
     LOGGER "开始下载dnsmasq gfwlist: ${gfw_file}.tmp 下载地址: ${remote_gfw_url_tmp}" >> $LOG_FILE
