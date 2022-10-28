@@ -24,7 +24,7 @@ dns:
   ipv6: false
   listen: :23453
   #DNS模式(redir-host/fake-ip),【Meta专属】redir-host传递域名，可远程解析
-  enhanced-mode: redir-host
+  enhanced-mode: fake-ip
   #Fake-IP解析地址池
   fake-ip-range: 198.18.0.1/16
   #查询hosts配置并返回真实IP
