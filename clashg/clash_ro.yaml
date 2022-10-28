@@ -13,6 +13,7 @@ log-level: error
 external-controller: 192.168.100.1:9990
 #external-ui: dashboard
 secret: "clash"
+#缓存设置(文件位置./cache.db)
 profile:
   #节点状态记忆
   store-selected: true
