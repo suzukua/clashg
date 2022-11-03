@@ -209,6 +209,11 @@ restart_dnsmasq(){
 
 start_clash(){
   LOGGER "启动Clash程序" >> $LOG_FILE
+  if [ ! -e "$clash_dir/cache.db" ]; then
+    touch /tmp/cache.db 2>&1 &
+    ln -s /tmp/cache.db $clash_dir
+  fi
+
   $clashg_dir/clash -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
   LOGGER "启动Clash程序完毕，Clash启动日志位置：/tmp/clashg_run.log" >> $LOG_FILE
   #检查clash进程
