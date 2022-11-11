@@ -133,7 +133,7 @@ get_fw_type() {
 
 # 清理旧文件，升级情况需要
 remove_files() {
-    if [ -d "/koolshare/${app_name}" ] ; then
+    if [ -d "/koolshare/${app_name}" ] && [ -n "${app_name}" ] ; then
         LOGGER 开始 清理旧文件
         rm -rf `ls /koolshare/${app_name}/ | grep -v custom_`
         rm -rf /koolshare/scripts/${app_name}_*
@@ -234,8 +234,9 @@ need_action() {
 # 清理安装包
 clean() {
     LOGGER 移除安装包！
-    cd /tmp
-    rm -rf /tmp/${app_name}  /tmp/${app_name}.tar.gz >/dev/null 2>&1
+    if [ -n "${app_name}" ]; then
+        rm -rf /tmp/${app_name}  /tmp/${app_name}.tar.gz >/dev/null 2>&1
+    fi
 }
 
 # ================================== INSTALL_START 开始安装 =========================
