@@ -27,12 +27,11 @@ gfw_file=/tmp/clashg_gfw.conf
 ipcidr_file=/tmp/clashg_cidr_tmp.txt
 
 shadowsocksport=""
-proxy_port=""
 tproxy_port=""
 inbound_tfo=""
 if [ -f $clash_file ]; then
-  shadowsocksport=$($clashg_dir/yq r $clash_file "shadowsocks.port" | xargs echo -n)
-  proxy_port=$(cat $clash_file | awk -F: '/^redir-port/{print $2}' | xargs echo -n)
+#  shadowsocksport=$($clashg_dir/yq r $clash_file "shadowsocks.port" | xargs echo -n)
+  shadowsocksport=$(cat $clash_file | awk -F: 'BEGIN{FS=":";}/^ss-config/{print $NF}' | xargs echo -n)
   tproxy_port=$(cat $clash_file | awk -F: '/^tproxy-port/{print $2}' | xargs echo -n)
   inbound_tfo=$(cat $clash_file | awk -F: '/^inbound-tfo/{print $2}' | xargs echo -n)
 fi
