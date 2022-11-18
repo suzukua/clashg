@@ -22,6 +22,7 @@ ipv6: false
 #tcp-concurrent: true
 dns:
   enable: true
+#  perfer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
   ipv6: false
   listen: :23453
   #DNS模式(redir-host/fake-ip),【Meta专属】redir-host传递域名，可远程解析
@@ -34,22 +35,23 @@ dns:
     - 223.5.5.5
     - 119.29.29.29
   nameserver:
-    - dhcp://ppp0
-  fallback:
-    - https://cloudflare-dns.com/dns-query#h3=true
-    - https://dns.adguard-dns.com/dns-query#h3=true
-    - https://dns.nextdns.io/ecb8ca#h3=true
-  fallback-filter:                   #回落DNS服务器过滤
-    geoip: true                      #为真时，不匹配为geoip规则的使用fallback返回结果
-    geoip-code: CN                   #geoip匹配区域设定
-    ipcidr:                          #列表中的ip使用fallback返回解析结果
-      - 240.0.0.0/4
-      - 0.0.0.0/8
-      - 127.0.0.0/8
-    domain:                          #列表中的域名使用fallback返回解析结果
-      - '+.google.com'
-      - '+.facebook.com'
-      - '+.youtube.com'
+    - 223.5.5.5
+    - 119.29.29.29
+  # fallback:
+  #   - https://cloudflare-dns.com/dns-query
+  #   - https://dns.adguard-dns.com/dns-query
+  #   - https://dns.nextdns.io/ecb8ca#h3=true
+  # fallback-filter:                   #回落DNS服务器过滤
+  #   geoip: true                      #为真时，不匹配为geoip规则的使用fallback返回结果
+  #   geoip-code: CN                   #geoip匹配区域设定
+  #   ipcidr:                          #列表中的ip使用fallback返回解析结果
+  #     - 240.0.0.0/4
+  #     - 0.0.0.0/8
+  #     - 127.0.0.0/8
+  #   domain:                          #列表中的域名使用fallback返回解析结果
+  #     - '+.google.com'
+  #     - '+.facebook.com'
+  #     - '+.youtube.com'
 
 sniffer:
   enable: true
