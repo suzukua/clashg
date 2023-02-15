@@ -17,7 +17,7 @@ start_online_update_hnd(){
   links="http://127.0.0.1:25500/sub?${subconverter_args}"
   LOGGER "subconverter进程：$(pidof subconverter)" >> $LOG_FILE
   LOGGER "即将开始转换，需要一定时间，请等候处理" >> $LOG_FILE
-  sleep 3s
+  sleep 1s
   LOGGER "生成订阅链接：$links" >> $LOG_FILE
 
   #wget下载文件
@@ -45,15 +45,15 @@ start_online_update_hnd(){
   fi
 }
 
-merge(){
-  LOGGER "合并配置到${clash_file}" >> $LOG_FILE
-  #自定义配置文件不存在则从原厂配置copy一份
-  if [ ! -f $clash_edit_file ]; then
-    cp $clash_ro_file $clash_edit_file
-  fi
-  $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
-  LOGGER "合并配置完成" >> $LOG_FILE
-}
+#merge(){
+#  LOGGER "合并配置到${clash_file}" >> $LOG_FILE
+#  #自定义配置文件不存在则从原厂配置copy一份
+#  if [ ! -f $clash_edit_file ]; then
+#    cp $clash_ro_file $clash_edit_file
+#  fi
+#  $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+#  LOGGER "合并配置完成" >> $LOG_FILE
+#}
 
 convert(){
   LOGGER "subconverter转换处理" >> $LOG_FILE

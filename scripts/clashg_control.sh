@@ -114,12 +114,16 @@ get_board_info(){
 }
 
 merge_run_yaml(){
-  LOGGER "合并配置到${clash_file}" >> $LOG_FILE
+  LOGGER "合并配置到${clash_file}, 耗时预计1分钟或者更长，请耐心等待" >> $LOG_FILE
   #自定义配置文件不存在则从原厂配置copy一份
   if [ ! -f $clash_edit_file ]; then
     cp $clash_ro_file $clash_edit_file
   fi
-  $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+  if [ ! -f $clash_sub_file ]; then
+    $clashg_dir/yq merge $clash_edit_file > $clash_file
+  else
+    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
+  fi
   LOGGER "合并配置完成" >> $LOG_FILE
 }
 
@@ -189,9 +193,9 @@ do_action() {
         LOGGER "定时更新开始"
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
-        merge_run_yaml
         #更新订阅
         [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
+        merge_run_yaml
         sh $clashg_dir/clashconfig.sh start
         LOGGER "定时更新结束, 重启完毕"
       fi
