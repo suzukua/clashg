@@ -94,7 +94,14 @@ get_status(){
   clash_udp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep udp -c)
   netstat_status="{\"key\":\"NETSTAT连接数\",\"value\":\"TCP:${clash_tcp_count}条,UDP:${clash_udp_count}条\"}"
 
-  echo "[$clash_status,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"
+sub_node_cont="{\"key\":\"订阅节点数\",\"value\":\""
+  if [ -f ${clash_file}  ]; then
+    sub_node_cont="${sub_node_cont}$($clashg_dir/yq r ${clash_file} "proxies[*].name" |grep "" -c)个\"}"
+  else
+    sub_node_cont="${sub_node_cont}0个\"}"
+  fi
+
+  echo "[$clash_status,$sub_node_cont,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"
 }
 
 #查询clash 面板信息

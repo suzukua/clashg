@@ -532,14 +532,6 @@
                                         </div>
                                     </label>
                                 </div>
-<!--                                <div id="clash_version_status">-->
-<!--                                    <i style="color:rgb(7, 234, 7)">当前版本：<% dbus_get_def("softcenter_module_clashg_version", "未知" ); %></i>-->
-<!--                                </div>-->
-
-<!--                                <div id="clash_install_show" style="display: none;">-->
-<!--                                    <a type="button" class="button_gen" onclick="ignore_new_version()" href="javascript:void(0);">忽略新版本</a> &nbsp;&nbsp;&nbsp;&nbsp;-->
-<!--                                    <a type="button" class="button_gen" onclick="update_clash_bin()" href="javascript:void(0);">更新最新版</a>-->
-<!--                                </div>-->
                             </td>
                         </tr>
                     </table>
