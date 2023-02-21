@@ -194,17 +194,30 @@ do_action() {
       ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
       response_json "$1" "$ret_data" "ok"
     ;;
-    update_rule_sub_restart)
+    update_rule)
       if [ "$clashg_enable" == "on" ]; then
         echo > $LOG_FILE #重置日志
-        LOGGER "定时更新开始"
+        LOGGER "定时更新规则开始"
+        #更新翻墙规则
+        sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
+        #更新订阅
+#        [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
+#        merge_run_yaml
+#        sh $clashg_dir/clashconfig.sh start
+        LOGGER "定时更新规则结束"
+      fi
+    ;;
+    update_sub_restart)
+      if [ "$clashg_enable" == "on" ]; then
+        echo > $LOG_FILE #重置日志
+        LOGGER "定时更新订阅节点开始"
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
         #更新订阅
         [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
         merge_run_yaml
         sh $clashg_dir/clashconfig.sh start
-        LOGGER "定时更新结束, 重启完毕"
+        LOGGER "定时更新订阅节点结束, 重启完毕"
       fi
     ;;
     get_status)

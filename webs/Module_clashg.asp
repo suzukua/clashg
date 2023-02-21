@@ -154,7 +154,8 @@
             E("clashg_enable").checked = (dbus["clashg_enable"] == 'on');
             E("clashg_mixed_port_status").checked = (dbus["clashg_mixed_port_status"] == 'on');
             E("clashg_subscribe_args").value = dbus["clashg_subscribe_args"] || "";
-            E("clashg_update_rule_sub_restart_cron").value = Base64.decode(dbus["clashg_update_rule_sub_restart_cron"] || "");
+            E("clashg_update_sub_cron").value = Base64.decode(dbus["clashg_update_sub_cron"] || "");
+            E("clashg_update_rule_cron").value = Base64.decode(dbus["clashg_update_rule_cron"] || "");
             E("clashg_update_geoip_cron").value = Base64.decode(dbus["clashg_update_geoip_cron"] || "");
             E("clashg_gfw_file").value = dbus["clashg_gfw_file"];
         }
@@ -557,6 +558,15 @@
                         </tr>
                         <tr>
                             <th>
+                                <label title="定时更新订阅节点并重启" class="hintstyle">定时更新订阅节点并重启</label>
+                            </th>
+                            <td>
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_sub_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_sub_cron')" href="javascript:void(0);">保存</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
                                 GFW列表选择
                             </th>
                             <td>
@@ -595,11 +605,11 @@
                         </tr>
                         <tr>
                             <th>
-                                <label title="定时更新并且重启" class="hintstyle">定时更新gfw、ipcidr、订阅并重启</label>
+                                <label title="定时更新,下一次重启clashg生效" class="hintstyle">定时更新gfw、ipcidr</label>
                             </th>
                             <td>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_rule_sub_restart_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
-                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_rule_sub_restart_cron')" href="javascript:void(0);">保存</button>
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_rule_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_rule_cron')" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
                         <tr>
