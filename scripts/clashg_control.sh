@@ -127,6 +127,7 @@ merge_run_yaml(){
     cp $clash_ro_file $clash_edit_file
   fi
   if [ ! -f $clash_sub_file ]; then
+    LOGGER "警告⚠️未找到订阅文件${clash_sub_file}，请确认。继续合并..." >> $LOG_FILE
     $clashg_dir/yq merge $clash_edit_file > $clash_file
   else
     $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
@@ -200,10 +201,6 @@ do_action() {
         LOGGER "定时更新规则开始"
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
-        #更新订阅
-#        [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
-#        merge_run_yaml
-#        sh $clashg_dir/clashconfig.sh start
         LOGGER "定时更新规则结束"
       fi
     ;;
@@ -211,8 +208,6 @@ do_action() {
       if [ "$clashg_enable" == "on" ]; then
         echo > $LOG_FILE #重置日志
         LOGGER "定时更新订阅节点开始"
-        #更新翻墙规则
-        sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
         #更新订阅
         [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
         merge_run_yaml
