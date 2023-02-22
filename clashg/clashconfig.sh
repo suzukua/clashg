@@ -306,6 +306,7 @@ add_cron(){
 }
 #删除全部
 rm_all_cron(){
+  del_cron_job clashg_update_sub_cron
   del_cron_job clashg_update_rule_cron
   del_cron_job clashg_update_geoip_cron
   LOGGER "定时任务清理完成" >> $LOG_FILE
