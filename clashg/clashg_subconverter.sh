@@ -25,7 +25,7 @@ start_online_update_hnd(){
   UA='Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36'
   LOGGER "使用常规网络下载..." >> $LOG_FILE
   curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file_tmp
-  LOGGER "配置文件下载完成" >>$LOG_FILE
+  LOGGER "配置文件下载完成 ${clash_sub_file_tmp}" >>$LOG_FILE
   #虽然为0但是还是要检测下是否下载到正确的内容
   if [ "$?" == "0" ];then
     #下载为空...
@@ -39,7 +39,7 @@ start_online_update_hnd(){
       LOGGER "获取clash配置文件失败！" >> $LOG_FILE
       failed_warning_clash
     fi
-    mv $clash_sub_file_tmp $clash_sub_file
+    cp $clash_sub_file_tmp $clash_sub_file
   else
     LOGGER "下载超时" >> $LOG_FILE
     failed_warning_clash
