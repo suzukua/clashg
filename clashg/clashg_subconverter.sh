@@ -25,17 +25,17 @@ start_online_update_hnd(){
   UA='Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36'
   LOGGER "使用常规网络下载..." >> $LOG_FILE
   curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file_tmp
-  LOGGER "配置文件下载完成 ${clash_sub_file_tmp}" >>$LOG_FILE
+  LOGGER "配置文件下载完成 ${clash_sub_file_tmp}" >> $LOG_FILE
   #虽然为0但是还是要检测下是否下载到正确的内容
   if [ "$?" == "0" ];then
     #下载为空...
     if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ]; then
       LOGGER "使用curl下载成功，但是内容不包含节点，尝试更换wget进行下载: $links"	>> $LOG_FILE
       rm -rf $clash_sub_file_tmp
-      wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"--no-check-certificate -t3 -T30 -4 -O $clash_sub_file_tmp "$links"
+      wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t3 -T30 -4 -O $clash_sub_file_tmp "$links"
     fi
     LOGGER "检查文件完整性" >> $LOG_FILE
-    if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ];then
+    if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ]; then
       LOGGER "订阅clash配置文件错误！没有包含节点" >> $LOG_FILE
       failed_warning_clash
     fi
