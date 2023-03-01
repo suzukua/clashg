@@ -3,7 +3,7 @@ source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 
 failed_warning_clash(){
-  LOGGER "本地获取文件失败！！！" >> $LOG_FILE
+  LOGGER "订阅下载失败！！！" >> $LOG_FILE
   sc_process=$(pidof subconverter)
   if [ -n "$sc_process" ]; then
     LOGGER 关闭subconverter进程... >> $LOG_FILE
