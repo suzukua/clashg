@@ -472,6 +472,9 @@
         function open_clash_board(board_url){
             window.open(board_url + '#/?host=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');
         }
+        function open_yacd_board(board_url){
+            window.open(board_url + '?host=http://' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');
+        }
     </script>
 </head>
 
@@ -680,6 +683,7 @@
                     <!--打开 Clash控制面板-->
                     <div id="status_tools " style="margin-top: 25px; padding-bottom: 20px;">
                         <button type="button" class="button_gen" id="clash_yacd_ui" onclick="open_clash_board('http://clash.metacubex.one/');">metacubex控制面板</button>
+                        <button type="button" class="button_gen" id="clash_yacd_ui" onclick="open_yacd_board('http://yacd.metacubex.one/');">yacd控制面板</button>
                     </div>
 
                     <div>
