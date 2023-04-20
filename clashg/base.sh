@@ -14,9 +14,9 @@ CURL_OPTS="-s -k"
 
 #DNS后置采用dnsmasq+gfw分流模式
 #分流出来的流量根据ipset重定向到clash redir-port
-remote_gfw_conf_full='https://raw.githubusercontent.com/zhudan/gfwlist2dnsmasq/hidden/gfw.conf'
-remote_gfw_conf_lite='https://raw.githubusercontent.com/zhudan/gfwlist2dnsmasq/hidden/gfw_lite.conf'
-remote_proxy_cidr='https://raw.githubusercontent.com/zhudan/gfwlist2dnsmasq/hidden/ip-cidr.ipset'
+remote_gfw_conf_full='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw.conf'
+remote_gfw_conf_lite='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw_lite.conf'
+remote_proxy_cidr='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/ip-cidr.ipset'
 
 dnsmasq_gfw_ipset="dnsmasq_gfw"
 gfw_cidr_ipset="gfw_cidr"
