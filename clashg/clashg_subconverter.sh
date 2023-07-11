@@ -29,10 +29,10 @@ start_online_update_hnd(){
   #虽然为0但是还是要检测下是否下载到正确的内容
   if [ "$?" == "0" ];then
     #下载为空...
-    if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ]; then
-      LOGGER "使用curl下载成功，但是内容不包含节点，尝试更换wget进行下载: $links"	>> $LOG_FILE
+    if [ -n "$(cat $clash_sub_file_tmp | grep proxies:)" ] && [ -z "$(cat $clash_sub_file_tmp | grep proxy-groups:\ ~)" ]; then
+      LOGGER "使用curl下载成功，但是内容不包含节点或者不包含proxy-groups，尝试更换wget进行下载: $links"	>> $LOG_FILE
       rm -rf $clash_sub_file_tmp
-      wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36" --no-check-certificate -t3 -T30 -4 -O $clash_sub_file_tmp "$links"
+      wget --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" --no-check-certificate -t3 -T30 -4 -O $clash_sub_file_tmp "$links"
     fi
     LOGGER "检查文件完整性" >> $LOG_FILE
     if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ]; then
