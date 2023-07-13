@@ -30,7 +30,7 @@ start_online_update_hnd(){
   if [ "$?" == "0" ];then
     #下载为空...
     if [ -n "$(cat $clash_sub_file_tmp | grep proxies:)" ] && [ -z "$(cat $clash_sub_file_tmp | grep proxy-groups:\ ~)" ]; then
-      LOGGER "使用curl下载成功，但是内容不包含节点或者不包含proxy-groups，尝试更换wget进行下载: $links"	>> $LOG_FILE
+      LOGGER "使用wget下载成功，但是内容不包含节点或者不包含proxy-groups，尝试更换curl进行下载: $links"	>> $LOG_FILE
       rm -rf $clash_sub_file_tmp
       curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file_tmp
     fi
