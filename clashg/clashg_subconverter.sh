@@ -35,7 +35,7 @@ start_online_update_hnd(){
       curl -4sSk --user-agent "$UA" --connect-timeout 30 "$links" > $clash_sub_file_tmp
     fi
     LOGGER "检查文件完整性" >> $LOG_FILE
-    if [ -z "$(cat $clash_sub_file_tmp | grep proxies:)" ]; then
+    if [ -n "$(cat $clash_sub_file_tmp | grep proxies:)" ] && [ -z "$(cat $clash_sub_file_tmp | grep type:\ select)" ]; then
       LOGGER "订阅clash配置文件错误！没有包含节点" >> $LOG_FILE
       failed_warning_clash
     fi
