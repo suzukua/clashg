@@ -36,7 +36,7 @@ start_online_update_hnd(){
     fi
     LOGGER "检查文件完整性" >> $LOG_FILE
     if [ -n "$(cat $clash_sub_file_tmp | grep proxies:)" ] && [ -z "$(cat $clash_sub_file_tmp | grep type:\ select)" ]; then
-      LOGGER "订阅clash配置文件错误！没有包含节点" >> $LOG_FILE
+      LOGGER "订阅clash配置文件错误！没有包含节点或者不包含proxy-groups" >> $LOG_FILE
       failed_warning_clash
     fi
     cp $clash_sub_file_tmp $clash_sub_file
