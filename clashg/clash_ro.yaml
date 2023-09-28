@@ -7,6 +7,7 @@ tproxy: true
 tproxy-port: 23458
 mode: Rule
 log-level: error
+external-controller: 192.168.100.1:9093
 external-controller-tls: 192.168.100.1:9443
 #external-ui: dashboard
 secret: "clash"
