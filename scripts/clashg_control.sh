@@ -107,7 +107,10 @@ sub_node_cont="{\"key\":\"订阅节点数\",\"value\":\""
 #查询clash 面板信息
 get_board_info(){
   if [ -f $clash_file ]; then
-    external=$($clashg_dir/yq r $clash_file "external-controller" | xargs echo -n)
+    external=$($clashg_dir/yq r $clash_file "external-controller-tls" | xargs echo -n)
+    if [ -z "$external" ]; then
+        external=$($clashg_dir/yq r $clash_file "external-controller" | xargs echo -n)
+    fi
     if [ -n "$external" ]; then
         ip=$(echo "$external" | cut -d : -f 1)
         port=$(echo "$external" | cut -d : -f 2)

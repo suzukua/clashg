@@ -7,7 +7,7 @@ tproxy: true
 tproxy-port: 23458
 mode: Rule
 log-level: error
-external-controller: 192.168.100.1:9990
+external-controller-tls: 192.168.100.1:9443
 #external-ui: dashboard
 secret: "clash"
 #缓存设置(文件位置./cache.db)
@@ -20,9 +20,10 @@ profile:
 ipv6: false
 #【Meta专属】TCP连接并发，如果域名解析结果对应多个IP, 并发所有IP，选择握手最快的IP进行连接
 #tcp-concurrent: true
+
 dns:
   enable: true
-#  perfer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
+  #  perfer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
   ipv6: false
   listen: :23453
   #DNS模式(redir-host/fake-ip),【Meta专属】redir-host传递域名，可远程解析
@@ -37,22 +38,6 @@ dns:
   nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  # fallback:
-  #   - https://cloudflare-dns.com/dns-query
-  #   - https://dns.adguard-dns.com/dns-query
-  #   - https://dns.nextdns.io/ecb8ca#h3=true
-  # fallback-filter:                   #回落DNS服务器过滤
-  #   geoip: true                      #为真时，不匹配为geoip规则的使用fallback返回结果
-  #   geoip-code: CN                   #geoip匹配区域设定
-  #   ipcidr:                          #列表中的ip使用fallback返回解析结果
-  #     - 240.0.0.0/4
-  #     - 0.0.0.0/8
-  #     - 127.0.0.0/8
-  #   domain:                          #列表中的域名使用fallback返回解析结果
-  #     - '+.google.com'
-  #     - '+.facebook.com'
-  #     - '+.youtube.com'
-
 sniffer:
   enable: true
   sniffing:
@@ -68,3 +53,57 @@ sniffer:
     - 8000-9000
 # force-domain:
 #   - '+'
+
+# 证书配置，用于https的external-controller-tls
+tls:
+  certificate: |-
+    -----BEGIN CERTIFICATE-----
+    MIIDbTCCAlWgAwIBAgIUZgcvmjvqU8MXVM87psikQA5fUMYwDQYJKoZIhvcNAQEL
+    BQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
+    GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAgFw0yMzA5MjgwNjEyMzNaGA8zMDIz
+    MDEyOTA2MTIzM1owRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx
+    ITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcN
+    AQEBBQADggEPADCCAQoCggEBAIcx2KrYe4QzVmuZ71PYKfPocqwtMTD7lQOHlDLX
+    XB12Zy9TXBgAAMQmqMzTaDhPCnBrfsRBOitdZ4/9ZzIOwoPFzZ7tgm/l95wfhnpW
+    ChwgXz06qmeT8FR2lSI6x1Tirh6TKmg432kAxQr858+NRFg+TbnecnjrkPOnS553
+    4zqrV65CSpHdWu1Z4X2RO4eNEAvaaHtRImpQLCguqUKHHlhEBfdu+B4hSkM91a+p
+    DKy+qXF8VglmR1DNWJ+Vkck3eDi5QG75vY+RhCX2Ge/xeavOI96Lp1mPiMUNe7EG
+    eN/CEPw5cq+/ZfQJa+mqTXcvi7qQORoZHeVj9e5P9FVhxBMCAwEAAaNTMFEwHQYD
+    VR0OBBYEFHCvWO3O/MHrYrJ4enrrPA7fAczaMB8GA1UdIwQYMBaAFHCvWO3O/MHr
+    YrJ4enrrPA7fAczaMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEB
+    AAyJCIw9MufShu75rY2ZMnEtCfUlOUmpMOcYdF+dE3HjJaCXTu7iRQW6kHzN3mkx
+    /JZdyQRCan+O8XYuMvpiL/R3qLLx3mp4NKinivXweJt5zNBzlaEajhuFbgfTR1+T
+    aJ9ru4v2OUuod1rFyHLBtQ1yCBIg8L1UsKZd1ChjptNNNWqIsjjHh1wCQ1fpk0+m
+    va189Ek1UdgpAdn2Rf/mVNfD3fmUuyVF6+xF3fFPmPmpQc3xuftDQP6DasBzA2d8
+    y1ChSz9INH7n1yLVwGncOiiPMFDP45YvynQ0oWljS54k4BShwzZ1G9qF5mo58aQd
+    n3DzNZzEIdOMjbdbtAnY4LE=
+    -----END CERTIFICATE-----
+  private-key: |-
+    -----BEGIN PRIVATE KEY-----
+    MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCHMdiq2HuEM1Zr
+    me9T2Cnz6HKsLTEw+5UDh5Qy11wddmcvU1wYAADEJqjM02g4Twpwa37EQTorXWeP
+    /WcyDsKDxc2e7YJv5fecH4Z6VgocIF89Oqpnk/BUdpUiOsdU4q4ekypoON9pAMUK
+    /OfPjURYPk253nJ465Dzp0ued+M6q1euQkqR3VrtWeF9kTuHjRAL2mh7USJqUCwo
+    LqlChx5YRAX3bvgeIUpDPdWvqQysvqlxfFYJZkdQzViflZHJN3g4uUBu+b2PkYQl
+    9hnv8XmrziPei6dZj4jFDXuxBnjfwhD8OXKvv2X0CWvpqk13L4u6kDkaGR3lY/Xu
+    T/RVYcQTAgMBAAECggEAD2D1M6ICkuxAFWdiWRhK1WsIuFs/sEG+FrOygQIMgXF5
+    lWGXJUfCzo1TQFGAFn+vQVCJEAwXcN1kLXX26jPRnqm+lSiRYOc4/nJ7mqj053Qr
+    QUzOG5Axk3oVxtoG2Loccm/tMAPgLhKfV3ujZvG754nWz6DlRqoNSBosuO8MUx0G
+    PUwe4ROjzpielVFoSOYeAlf4a2hHUFm3+NK9utvQJQMmM6F3C6Eek/T+1bw5FHfg
+    x7T22dbc/k5n43kZS5Ht54EHMxnU7eFGAA/eV20NZhQvb2Ie7PudJi18gD61bVLv
+    67oT/Wj0Ak3CDOjpf6g7AG0JAoj9cMhiYJF4DVj/6QKBgQC8V6gNwW6SLyhLB/Ta
+    OQzjAVT1mJMJWLFTktJCEU0SHNWhrwLnFjB4ubVzgNt4OuabdMndTQhWY8YLBoaO
+    4kENJjRIqjvZBi5kcxYZ0BfCwP+bJB+JmI5xA4XhLrxzVt8dK6wRbzPFMmVLjpw+
+    hJAek+ccOftQ1+iW/qmmSsM2VwKBgQC3wp8tJg6sGIaj42TmvSmk1dhruutVG1Zg
+    /sIhtAG7KbO3L4mcCJZlVM1YGKb0VLD3yKW/NPoE8J7WCEjHMokrHhgWf3GfuwAp
+    cIktPHnYUy2rvB7F+ptxmEz2g2pHDZh/Cboz1rakC06b9Fjerm8fYldV9lWAElRs
+    rGsd52typQKBgBghrxGcIBuw2RvL+C5hsun/CLCzDNvctlO78x6t8s8ITML7loaf
+    TDSbrskO0I/2FAgFDbxCG3heLkjJXEJAcQ9LPtW0ohhrd1Q9fq5uAC1e5yEsnrHV
+    jyKhzeyNPW4Vyl6FcvWE5wA0NdBZhGFqQMD6OFlggHfaQh3eoUQCPkLfAoGAbKbY
+    sztTZZJC2dh0KrIiU2JVyq0ExJebZVJ8uqzScTXhGykydl3lfxi7KaG55bHFyVyM
+    FBhg1Fbps6fGUHGjBSmQGI1WQ5mwKNBva53cdXoJAQgEMg9RpcLljsR5LHXvev3n
+    aQtFho1g93lsqo39ClN9TEiQmV89J9xyoYXZ1DkCgYBLkyL1yac9kuA8+qNEyuSI
+    TW6iuBBBnGM52vxaHDbs8oZ45cj4LVr/2y3xA4aIvAS6RjH5vU7/4e+0wzidD9/g
+    3XWHsk1JbhHlWj4scEOpb4o+i+FVSAR2S1pwMERwN6Z0jt5ILwWiVj3s9C26xnfG
+    zZMRN7Ec60tuSmq/Ym65IQ==
+    -----END PRIVATE KEY-----
