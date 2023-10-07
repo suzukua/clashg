@@ -44,10 +44,11 @@ get_status(){
   #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
   clash_status="{\"key\":\"Clash\",\"value\":\""
   clashpid="$(pidof clash)"
+  version=$($clashg_dir/clash -v | grep -o 'Clash Meta v[0-9]\+\.[0-9]\+\.[0-9]\+')
   if [ -z "$clashpid" ]; then
-    clash_status="${clash_status}启动状态:不正常"
+    clash_status="${clash_status}启动状态:不正常($version)"
   else
-    clash_status="${clash_status}启动状态:正常,pid>${clashpid}"
+    clash_status="${clash_status}启动状态:正常,pid>${clashpid}($version)"
   fi
   if [ ! -f "$clash_file" ]; then
     clash_status="${clash_status}-clash.yaml:不存在"
