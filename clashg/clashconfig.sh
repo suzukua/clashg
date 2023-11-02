@@ -255,6 +255,7 @@ stop_clash(){
     LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
     killall clash >/dev/null 2>&1
     kill -9 "$clash_process" >/dev/null 2>&1
+    usleep 500000
   fi
 }
 
