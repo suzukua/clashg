@@ -41,8 +41,8 @@ dns:
 sniffer:
   enable: true
   sniff:
-    - tls
-    - http
+    tls:
+    http:
   skip-domain:
     - 'Mijia Cloud'
     - 'dlg.io.mi.com'
