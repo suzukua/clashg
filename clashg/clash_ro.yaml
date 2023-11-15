@@ -40,7 +40,7 @@ dns:
     - 119.29.29.29
 sniffer:
   enable: true
-  sniffing:
+  sniff:
     - tls
     - http
   skip-domain:

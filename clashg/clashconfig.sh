@@ -219,8 +219,8 @@ start_clash(){
   $clashg_dir/clash -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
   LOGGER "启动Clash程序完毕，Clash启动日志位置：/tmp/clashg_run.log" >> $LOG_FILE
   #检查clash进程
-  LOGGER "默认检查日志延迟时间:2秒" >> $LOG_FILE
-  sleep 2s
+  LOGGER "默认检查日志延迟时间:3秒" >> $LOG_FILE
+  sleep 3s
 
   if [ ! -z "$(pidof clash)" -a ! -z "$(netstat -anp | grep clash)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
     LOGGER "Clash 进程启动成功！(PID: $(pidof clash))"
@@ -255,7 +255,6 @@ stop_clash(){
     LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
     killall clash >/dev/null 2>&1
     kill -9 "$clash_process" >/dev/null 2>&1
-    usleep 500000
   fi
 }
 
