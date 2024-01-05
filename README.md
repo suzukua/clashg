@@ -6,6 +6,7 @@
 - 支持Shadowsocks入站,UDP+TCP,IPV6+IPV4
 - 入站支持TFO
 - 支持自动更新geoip和gfw规则
-<img width="784" alt="image" src="https://user-images.githubusercontent.com/1744697/185013612-6e495270-6a60-4b5d-b92a-e5f84f2161e4.png">
+<img width="753" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/53351aba-f8ce-421f-b815-f5069e39e86c">
 --------
+
 -- 部分参考MC和vClash
