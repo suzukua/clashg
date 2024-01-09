@@ -1,5 +1,5 @@
-# ClashG(只支持HND)
-依据GFW域名用dnsmasq进行分流，对列表外流量无任何影响(高稳定、高可靠、高容错方案)
+# ClashG(AX86U，理论上支持其他HND平台)
+依据GFW域名用dnsmasq进行分流，对国内流量无任何影响(高稳定、高可靠、高容错方案)
 ## Features
 - 基于[Clash.Meta](https://github.com/MetaCubeX/Clash.Meta)
 - 支持局域网内TCP/UDP透明代理(TPROXY)
