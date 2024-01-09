@@ -1,5 +1,6 @@
-# ClashG(AX86U上开发测试，理论上支持其他HND平台)
+# ClashG(AX86U官改固件上开发测试，理论上支持其他HND平台)
 依据GFW域名用dnsmasq进行分流+部分国外IP，对国内流量无任何影响(高稳定、高可靠、高容错方案)
+# [立即下载](https://github.com/zhudan/clashg/releases)
 ## Features
 - 基于[mihomo(Clash.Meta)](https://github.com/MetaCubeX/mihomo) 实现
 - 支持局域网内TCP/UDP透明代理(TPROXY)
