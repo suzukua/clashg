@@ -9,7 +9,13 @@
 - 支持自动更新geoip和gfw规则
 - 支持手动编辑clash配置文件
 <img width="753" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/53351aba-f8ce-421f-b815-f5069e39e86c">
+<img width="812" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/d429f185-a93f-4389-aed3-9907329fbbb4">
+<img width="754" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/275d08ae-37d5-4f9a-bd93-2585d6c5a311">
+<img width="741" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/8a9fa861-b640-4ae6-aa3b-c010d121b39c">
+<img width="740" alt="image" src="https://github.com/zhudan/clashg/assets/1744697/bfdaf823-37ab-4606-9d62-76af2d110b34">
 
 --------
 
--- 部分参考MC和vClash
+
+
+-- 部分实现参考MC和vClash
