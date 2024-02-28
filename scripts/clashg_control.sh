@@ -106,7 +106,7 @@ get_board_info(){
     if [ -n "$external" ]; then
         ip=$(echo "$external" | cut -d : -f 1)
         port=$(echo "$external" | cut -d : -f 2)
-        secret=$(grep "secret:" $clash_file | awk -F': ' '{print $2}')
+        secret="$(grep "secret:" $clash_file | awk -F': ' '{print $2}')"
         echo "{\"ip\":\"$ip\",\"port\":\"$port\",\"secret\":\"$secret\"}"
         return 0
     fi
