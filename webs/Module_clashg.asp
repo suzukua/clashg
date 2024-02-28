@@ -357,7 +357,12 @@
             // $j("#loadingIcon").show();
             apply_action("update_dns_ipset_rule", "0", null);
         }
-
+        function update_gfw_file(){
+            dbus["clashg_gfw_file"] = document.getElementById("clashg_gfw_file").value
+            apply_action("save_clashg_gfw_file", "2", null, {
+                            "clashg_gfw_file": dbus["clashg_gfw_file"]
+                        });
+        }
         // 恢复配置信息的压缩包文件
         function reset_config_file() {
             apply_action("reset_config_file", "2", function() {
@@ -516,6 +521,18 @@
                                 <td colspan="2">ClashG - 资源配置</td>
                             </tr>
                         </thead>
+                        <tr>
+                            <th>
+                                GFW列表选择
+                            </th>
+                            <td>
+                                <select id="clashg_gfw_file" class="input_option" style="width:67%">
+                                    <option value="gfw_file_full" checked>GFW全</option>
+                                    <option value="gfw_file_lite">GFW精简</option>
+                                </select>
+                                 <button type="button" class="button_gen" onclick="update_gfw_file()" href="javascript:void(0);">保存</button>
+                            </td>
+                        </tr>
                         <tr>
                             <th>
                                 <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">gfw和ipcidr文件</label>
