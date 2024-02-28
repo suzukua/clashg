@@ -50,8 +50,7 @@ get(){
 #如果是github资源则增加代理前缀
 get_direct_url(){
   origin_url=$1
-  is_github=$(expr "$origin_url" : https\:\/\/raw\.githubusercontent\.com.* || expr "$origin_url" : https\:\/\/github\.com.*;)
-  if [ "$is_github" -gt "0" ]; then
+  if echo $origin_url | grep -E "^https://(raw.githubusercontent.com|github.com)"; then
     origin_url="${github_proxy}${origin_url}"
   fi
   echo "$origin_url"
