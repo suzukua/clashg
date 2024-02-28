@@ -153,10 +153,7 @@
         function conf2obj() {
             E("clashg_enable").checked = (dbus["clashg_enable"] == 'on');
             E("clashg_mixed_port_status").checked = (dbus["clashg_mixed_port_status"] == 'on');
-            E("clashg_subscribe_args").value = dbus["clashg_subscribe_args"] || "";
-            E("clashg_update_sub_cron").value = Base64.decode(dbus["clashg_update_sub_cron"] || "");
             E("clashg_update_rule_cron").value = Base64.decode(dbus["clashg_update_rule_cron"] || "");
-            E("clashg_update_geoip_cron").value = Base64.decode(dbus["clashg_update_geoip_cron"] || "");
             E("clashg_gfw_file").value = dbus["clashg_gfw_file"];
         }
 
@@ -336,11 +333,6 @@
         }
 
         function switch_service() {
-            if(!dbus['clashg_subscribe_args']){
-                show_result("请先在资源配置中订阅在操作")
-                document.getElementById('clashg_enable').checked = false
-                return false;
-            }
             $j("#loadingIcon").show();
             if (document.getElementById('clashg_enable').checked) {
                 dbus["clashg_enable"] = "on";
@@ -361,31 +353,9 @@
             });
         }
 
-
-        function get_proc_status() { // 查看服务运行状态
-            apply_action("get_proc_status", "0", null, {});
-        }
-
-        function update_geoip() { // 更新GeoIP
-            // $j("#loadingIcon").show();
-            apply_action("update_geoip " + document.getElementById("clashg_geoip_url").value, "0", null);
-        }
         function update_dns_ipset_rule(){
             // $j("#loadingIcon").show();
             apply_action("update_dns_ipset_rule", "0", null);
-        }
-        function update_gfw_file(){
-            dbus["clashg_gfw_file"] = document.getElementById("clashg_gfw_file").value
-            apply_action("save_clashg_gfw_file", "2", null, {
-                            "clashg_gfw_file": dbus["clashg_gfw_file"]
-                        });
-        }
-        function subscribe(){
-            // $j("#loadingIcon").show();
-            dbus["clashg_subscribe_args"] = document.getElementById("clashg_subscribe_args").value
-            apply_action("subscribe", "0", null,{
-                "clashg_subscribe_args": dbus["clashg_subscribe_args"]
-            });
         }
 
         // 恢复配置信息的压缩包文件
@@ -548,62 +518,11 @@
                         </thead>
                         <tr>
                             <th>
-                                <label class="hintstyle" title="target=$clashtarget&new_name=true&url=$link&insert=false&config=${urlinilink}&include=$include&exclude=$exclude&append_type=$appendtype&emoji=$emoji&udp=$udp&fdn=$fdn&sort=$sort&scv=$scv&tfo=$tfo">订阅节点</label>
-                            </th>
-                            <td>
-                                <span style="text-align:left;">
-                                   参考subconverter参数
-                                </span>
-                                <br>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_subscribe_args" placeholder="参考subconverter参数:target=clash&new_name=true&url=$link&config=${configlink}">
-                                <button type="button" class="button_gen" onclick="subscribe()" href="javascript:void(0);">订阅</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label title="定时更新订阅节点并重启" class="hintstyle">定时更新订阅节点并重启</label>
-                            </th>
-                            <td>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_sub_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
-                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_sub_cron')" href="javascript:void(0);">保存</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                GFW列表选择
-                            </th>
-                            <td>
-                                <select id="clashg_gfw_file" class="input_option" style="width:67%">
-                                    <option value="gfw_file_full" checked>GFW全</option>
-                                    <option value="gfw_file_lite">GFW精简</option>
-                                </select>
-                                 <button type="button" class="button_gen" onclick="update_gfw_file()" href="javascript:void(0);">保存</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
                                 <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">gfw和ipcidr文件</label>
                             </th>
                             <td>
                                 预设gfw和ipcidr规则,暂不支持修改<a style="color:chartreuse" href="https://github.com/zhudan/gfwlist2dnsmasq" target="_blank" rel="noopener noreferrer">Github地址</a>
                                  <button type="button" class="button_gen" onclick="update_dns_ipset_rule()" href="javascript:void(0);">更新</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label title="更新频率不同过高,一周更新一次即可." class="hintstyle">Country.mmdb文件</label>
-                            </th>
-                            <td>
-                                <span style="text-align:left;">
-                                    1. 全量GeoIP版本(6MB左右)<a class="copyToClipboard"  href="https://raw.githubusercontent.com/Dreamacro/maxmind-geoip/release/Country.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp;  <a style="color:chartreuse" href="https://github.com/Dreamacro/maxmind-geoip" target="_blank" rel="noopener noreferrer">Github地址</a> <br>
-                                    2. Loyalsoldier精简版(200KB左右，默认使用)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp;  <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a><br>
-                                    4. Loyalsoldier版(5MB左右)<a class="copyToClipboard" href="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb" onclick="copyURI(event)">点击选择</a> &nbsp;&nbsp; <a style="color: chartreuse;" href="https://github.com/Loyalsoldier/geoip" target="_blank" rel="noopener noreferrer">Github地址</a>
-                                </span>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_geoip_url" placeholder="自定义GeoIP数据下载地址">
-                                <button type="button" class="button_gen" onclick="update_geoip()" href="javascript:void(0);">更新</button>
-                                <br>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_geoip_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
-                                <button type="button" class="button_gen" onclick="update_cron('clashg_update_geoip_cron')" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
                         <tr>

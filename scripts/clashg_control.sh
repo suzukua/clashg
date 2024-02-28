@@ -3,8 +3,6 @@ source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 
 clashg_enable=$(get clashg_enable) #on:启用, off:停用
-clashg_subscribe_args=$(get clashg_subscribe_args)
-clashg_geoip_url=$(get clashg_geoip_url)
 
 # 用于返回JSON格式数据: {result: id, status: ok, data: {key:value, ...}}
 response_json() {
@@ -95,27 +93,20 @@ get_status(){
   clash_udp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep udp -c)
   netstat_status="{\"key\":\"NETSTAT连接数\",\"value\":\"TCP:${clash_tcp_count}条,UDP:${clash_udp_count}条\"}"
 
-sub_node_cont="{\"key\":\"订阅节点数\",\"value\":\""
-  if [ -f ${clash_file}  ]; then
-    sub_node_cont="${sub_node_cont}$($clashg_dir/yq r ${clash_file} "proxies[*].name" |grep "" -c)个\"}"
-  else
-    sub_node_cont="${sub_node_cont}0个\"}"
-  fi
-
-  echo "[$clash_status,$sub_node_cont,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"
+  echo "[$clash_status,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"
 }
 
 #查询clash 面板信息
 get_board_info(){
   if [ -f $clash_file ]; then
-    external=$($clashg_dir/yq r $clash_file "external-controller-tls" | xargs echo -n)
+    external=$(grep "external-controller-tls:" $clash_file | awk -F': ' '{print $2}')
     if [ -z "$external" ]; then
-        external=$($clashg_dir/yq r $clash_file "external-controller" | xargs echo -n)
+        external=$(grep "external-controller:" $clash_file | awk -F': ' '{print $2}')
     fi
     if [ -n "$external" ]; then
         ip=$(echo "$external" | cut -d : -f 1)
         port=$(echo "$external" | cut -d : -f 2)
-        secret=$($clashg_dir/yq r $clash_file "secret" | xargs echo -n)
+        secret=$($(grep "secret:" $clash_file | awk -F': ' '{print $2}'))
         echo "{\"ip\":\"$ip\",\"port\":\"$port\",\"secret\":\"$secret\"}"
         return 0
     fi
@@ -125,18 +116,13 @@ get_board_info(){
 }
 
 merge_run_yaml(){
-  LOGGER "合并配置到${clash_file}, 耗时预计1分钟或者更长，请耐心等待" >> $LOG_FILE
+  LOGGER "生成配置到${clash_file}，请耐心等待" >> $LOG_FILE
   #自定义配置文件不存在则从原厂配置copy一份
   if [ ! -f $clash_edit_file ]; then
     cp $clash_ro_file $clash_edit_file
   fi
-  if [ ! -f $clash_sub_file ]; then
-    LOGGER "警告⚠️未找到订阅文件${clash_sub_file}，请确认。继续合并..." >> $LOG_FILE
-    $clashg_dir/yq merge $clash_edit_file > $clash_file
-  else
-    $clashg_dir/yq merge $clash_edit_file $clash_sub_file > $clash_file
-  fi
-  LOGGER "合并配置完成" >> $LOG_FILE
+  cp $clash_edit_file $clash_file
+  LOGGER "生成配置完成" >> $LOG_FILE
 }
 
 do_action() {
@@ -185,17 +171,7 @@ do_action() {
       ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
       response_json "$1" "$ret_data" "ok"
     ;;
-    update_geoip)
-      sh $clashg_dir/clashconfig.sh update_geoip $clashg_geoip_url
-      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-      [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok" #定时任务更新不执行
-    ;;
-    subscribe)
-      [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
-      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-      response_json "$1" "$ret_data" "ok"
-    ;;
-    update_cron|set_mixed_port_status|save_clashg_gfw_file)
+    update_cron|set_mixed_port_status)
       ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
       response_json "$1" "$ret_data" "ok"
     ;;
@@ -206,17 +182,6 @@ do_action() {
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
         LOGGER "定时更新规则结束"
-      fi
-    ;;
-    update_sub_restart)
-      if [ "$clashg_enable" == "on" ]; then
-        echo > $LOG_FILE #重置日志
-        LOGGER "定时更新订阅节点开始"
-        #更新订阅
-        [ -n "$clashg_subscribe_args" ] && sh $clashg_dir/clashg_subconverter.sh $clashg_subscribe_args
-        merge_run_yaml
-        sh $clashg_dir/clashconfig.sh start
-        LOGGER "定时更新订阅节点结束, 重启完毕"
       fi
     ;;
     get_status)

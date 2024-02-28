@@ -5,10 +5,8 @@ LOG_FILE=/tmp/upload/clashglog.txt
 clash_ro_file="${clashg_dir}/clash_ro.yaml" #原厂配置
 clash_edit_file="${clashg_dir}/custom_clash_edit.yaml" #修改的配置
 clash_file="${clashg_dir}/clash.yaml" #程序运行时的配置
-clash_sub_file="${clashg_dir}/custom_clash_sub.yaml" #订阅转换回来的配置
-clash_sub_file_tmp="${clashg_dir}/custom_clash_sub.yaml.tmp" #订阅转换回来的临时配置
 
-github_proxy="https://ghproxy.com/"
+github_proxy="https://mirror.ghproxy.com/"
 CURL_OPTS="-s -k"
 
 
@@ -31,8 +29,7 @@ shadowsocksport=""
 tproxy_port=""
 inbound_tfo=""
 if [ -f $clash_file ]; then
-#  shadowsocksport=$($clashg_dir/yq r $clash_file "shadowsocks.port" | xargs echo -n)
-  shadowsocksport=$(cat $clash_file | awk -F: 'BEGIN{FS=":";}/^ss-config/{print $NF}' | xargs echo -n)
+  shadowsocksport=$(grep shadowsocks $clash_file  | awk -F'[:,]' '{for(i=1;i<=NF;i++){if($i~/port/)print $(i+1)}}'| tr -d ' ')
   tproxy_port=$(cat $clash_file | awk -F: '/^tproxy-port/{print $2}' | xargs echo -n)
   inbound_tfo=$(cat $clash_file | awk -F: '/^inbound-tfo/{print $2}' | xargs echo -n)
 fi

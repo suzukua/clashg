@@ -1,16 +1,24 @@
-ss-config: ss://aes-128-gcm:password@:29999
-
 inbound-tfo: true
-
+listeners:
+  - {"name": "go-home","type": "shadowsocks","port": 29999,"listen": "0.0.0.0","cipher": "aes-128-gcm","password": "password","udp": true}
 allow-lan: true
 tproxy: true
 tproxy-port: 23458
-mode: Rule
+# off, 不匹配进程，推荐在路由器上使用此模式
+find-process-mode: off
+mode: rule
+#自定义 geodata url
+geox-url:
+#  geoip: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip-only-cn-private.dat"
+#  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://mirror.ghproxy.com/https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
+geo-auto-update: true # 是否自动更新 geodata
+geo-update-interval: 24 # 更新间隔，单位：小时
 log-level: error
 external-controller: 192.168.100.1:9093
 external-controller-tls: 192.168.100.1:9443
-#external-ui: dashboard
 secret: "clash"
+
 #缓存设置(文件位置./cache.db)
 profile:
   #节点状态记忆
@@ -40,19 +48,80 @@ dns:
     - 119.29.29.29
 sniffer:
   enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: false
   sniff:
-    tls:
-    http:
+    HTTP:
+      ports: [ 80, 8080-8880 ]
+      override-destination: true
+    TLS:
+      ports: [ 443, 8443 ]
+    QUIC:
+      ports: [ 443, 8443 ]
   skip-domain:
     - 'Mijia Cloud'
-    - 'dlg.io.mi.com'
-    - '+.apple.com'
-  port-whitelist:
-    - 80
-    - 443
-    - 8000-9000
-# force-domain:
-#   - '+'
+
+# sub-store管理订阅
+proxy-providers:
+  gfw-proxies:
+    type: http
+    path: ./gfw-proxies.yaml
+    url: "http://192.168.100.2:3001/get-my-subscribe/download/collection/all?target=ClashMeta"
+    interval: 43200
+    exclude-filter: "AI|ai"
+  openai-proxies:
+    type: http
+    path: ./openai-proxies.yaml
+    url: "http://192.168.100.2:3001/get-my-subscribe/download/collection/all?target=ClashMeta"
+    interval: 43200
+    filter: "AI|ai"
+
+proxy-groups:
+  - name: "\U0001F680 节点选择"
+    type: select
+    proxies:
+      - "♻️ 自动选择"
+      - DIRECT
+    use:
+      - gfw-proxies
+  - name: "\U0001F4AC OpenAi"
+    type: select
+    proxies:
+      - "♻️ 自动选择AI"
+      - DIRECT
+    use:
+      - openai-proxies
+  - name: "♻️ 自动选择"
+    type: url-test
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    use:
+      - gfw-proxies
+  - name: "♻️ 自动选择AI"
+    type: url-test
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    use:
+      - openai-proxies
+  - name: "\U0001F3AF 全球直连"
+    type: select
+    proxies:
+      - DIRECT
+
+rule-providers:
+  openai:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./openai-rules.yaml
+    url: "https://gitlab.com/lodepuly/proxy_tool_resources/-/raw/master/rule/Clash/OpenAI/OpenAI_No_Resolve.yaml?ref_type=heads"
+    interval: 86400
+
+rules:
+  - "GEOIP,PRIVATE,\U0001F3AF 全球直连,no-resolve"
+  - "RULE-SET,openai,\U0001F4AC OpenAi"
+  - "MATCH,\U0001F680 节点选择"
 
 # 证书配置，用于https的external-controller-tls
 tls:

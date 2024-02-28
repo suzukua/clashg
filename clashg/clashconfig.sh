@@ -3,9 +3,7 @@
 source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 
-clashg_update_geoip_cron_base64=$(get clashg_update_geoip_cron)
 clashg_update_rule_cron_base64=$(get clashg_update_rule_cron)
-clashg_update_sub_cron_base64=$(get clashg_update_sub_cron)
 clashg_mixed_port_status=$(get clashg_mixed_port_status)
 clashg_gfw_file=$(get clashg_gfw_file)
 
@@ -281,13 +279,6 @@ del_cron_job() {
 
 ##增加
 add_cron(){
-  #sub
-  if [ -z "${clashg_update_sub_cron_base64}" ]; then
-    del_cron_job clashg_update_sub_cron
-  else
-    clashg_update_sub_cron=$(echo -n ${clashg_update_sub_cron_base64} | base64_decode)
-    add_cron_job clashg_update_sub_cron "${clashg_update_sub_cron}" "/koolshare/scripts/clashg_control.sh -1 update_sub_restart" >> $LOG_FILE
-  fi
   #rule
   if [ -z "${clashg_update_rule_cron_base64}" ]; then
     del_cron_job clashg_update_rule_cron
@@ -295,20 +286,11 @@ add_cron(){
     clashg_update_rule_cron=$(echo -n ${clashg_update_rule_cron_base64} | base64_decode)
     add_cron_job clashg_update_rule_cron "${clashg_update_rule_cron}" "/koolshare/scripts/clashg_control.sh -1 update_rule" >> $LOG_FILE
   fi
-  #geo
-  if [ -z "${clashg_update_geoip_cron_base64}" ]; then
-    del_cron_job clashg_update_geoip_cron
-  else
-    clashg_update_geoip_cron=$(echo -n ${clashg_update_geoip_cron_base64} | base64_decode)
-    add_cron_job clashg_update_geoip_cron "${clashg_update_geoip_cron}" "/koolshare/scripts/clashg_control.sh -1 update_geoip" >> $LOG_FILE
-  fi
   LOGGER "定时任务添加完成" >> $LOG_FILE
 }
 #删除全部
 rm_all_cron(){
-  del_cron_job clashg_update_sub_cron
   del_cron_job clashg_update_rule_cron
-  del_cron_job clashg_update_geoip_cron
   LOGGER "定时任务清理完成" >> $LOG_FILE
 }
 
