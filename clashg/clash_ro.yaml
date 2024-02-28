@@ -17,7 +17,7 @@ geo-update-interval: 24 # 更新间隔，单位：小时
 log-level: error
 external-controller: 192.168.100.1:9093
 external-controller-tls: 192.168.100.1:9443
-secret: "clash"
+secret: clash
 
 #缓存设置(文件位置./cache.db)
 profile:
