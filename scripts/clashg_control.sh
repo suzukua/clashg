@@ -181,6 +181,7 @@ do_action() {
         LOGGER "定时更新规则开始"
         #更新翻墙规则
         sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
+        sh $clashg_dir/clashconfig.sh out_restart_dnsmasq
         LOGGER "定时更新规则结束"
       fi
     ;;

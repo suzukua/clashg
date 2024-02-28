@@ -142,31 +142,6 @@ download_res_if_need(){
   fi
 }
 
-# 更新Country.mmdb文件
-update_geoip() {
-  LOGGER "geo下载: 开始处理" >> $LOG_FILE
-  local clashg_geoip_url=$1
-  geoip_file="${clashg_dir}/Country.mmdb"
-  geoip_file_new="${clashg_dir}/Country.mmdb.new"
-  local geoip_url="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
-  if [ ! -z "$clashg_geoip_url" ] ; then
-    geoip_url="$clashg_geoip_url"
-  fi
-  geoip_url=$(get_direct_url "${geoip_url}")
-  LOGGER "geo开始下载: ${geoip_file_new}, 地址: ${geoip_url}" >> $LOG_FILE
-  curl ${CURL_OPTS} -o "${geoip_file_new}" "${geoip_url}"
-  if [ "$?" != "0" ] ; then
-    LOGGER "下载 $geoip_file_new 文件失败! [${geoip_url}]" >> $LOG_FILE
-    rm -rf $geoip_file_new
-    return 1
-  fi
-  mv ${geoip_file} ${geoip_file}.bak
-  mv ${geoip_file_new} ${geoip_file}
-  LOGGER "「$geoip_file」文件更新成功!" >> $LOG_FILE
-  LOGGER "文件大小变化[`du -h ${geoip_file}.bak|cut -f1`]=>[`du -h ${geoip_file}|cut -f1`]" >> $LOG_FILE
-  rm ${geoip_file}.bak
-}
-
 #挂载gfwlist
 add_dnsmasq_gfwlist(){
   download_res_if_need
@@ -359,14 +334,14 @@ update_dns_ipset_rule)
   set_lock
   LOGGER "更新规则开始下载资源" >> $LOG_FILE
   download_res_if_need "true"
-  LOGGER "下载完成" >> $LOG_FILE
+  LOGGER "下载完成,重启Clashg或者重启dnsmasq(仅域名规则)后生效" >> $LOG_FILE
   unset_lock
   ;;
-update_geoip)
+out_restart_dnsmasq)
   set_lock
-  LOGGER 开始更新geo文件 >> $LOG_FILE
-  update_geoip $2
-  LOGGER 完成更新geo文件 >> $LOG_FILE
+  LOGGER "开始重启dnsmasq" >> $LOG_FILE
+  restart_dnsmasq
+  LOGGER "重启dnsmasq完成" >> $LOG_FILE
   unset_lock
   ;;
 esac
