@@ -561,7 +561,7 @@
                         <tr>
                             <td colspan="2">
                                 <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
-                                <textarea id="clash_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%;" title="为了防止误编辑，默认为只读，点击编辑后才可修改哦！&#010;快捷键Ctrl+S: 保存.&#010;快捷键Ctrl+E: 编辑.&#010;快捷键Ctrl+R: 重新加载。"></textarea>
+                                <textarea id="clash_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%; white-space: pre;" title="为了防止误编辑，默认为只读，点击编辑后才可修改哦！&#010;快捷键Ctrl+S: 保存.&#010;快捷键Ctrl+E: 编辑.&#010;快捷键Ctrl+R: 重新加载。"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -581,7 +581,7 @@
                         <tr id="logBackup">
                             <td colspan="2">
                                 <p style="text-align: left; color: rgb(32, 252, 32); font-size: 18px;padding-top: 10px;padding-bottom: 10px;">日志信息</p>
-                                <textarea rows="20" style="width:98%" wrap="off" readonly="readonly" id="clash_log_backup" class="textarea_ssh_table"></textarea>
+                                <textarea rows="20" style="width:98%;white-space: pre;" wrap="off" readonly="readonly" id="clash_log_backup" class="textarea_ssh_table"></textarea>
                             </td>
                         </tr>
                     </table>
@@ -595,7 +595,7 @@
                         <tr>
                             <td colspan="2">
                                 <div style="display: block;text-align: center; font-size: 14px; color:rgb(0, 201, 0);">文件内容</div>
-                                <textarea id="clash_run_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%;"></textarea>
+                                <textarea id="clash_run_config_content" readonly="true" rows="20" class="textarea_ssh_table" style="width: 98%;white-space: pre;"></textarea>
                             </td>
                         </tr>
                     </table>
@@ -615,7 +615,7 @@
 
                     <div id="logMsg" style="display: none;">
                         <div>显示日志信息</div>
-                        <textarea rows="20" wrap="off" readonly="readonly" id="clash_log_msg" class="textarea_ssh_table" style="width:98%"></textarea>
+                        <textarea rows="20" wrap="off" readonly="readonly" id="clash_log_msg" class="textarea_ssh_table" style="width:98%;white-space: pre;"></textarea>
                     </div>
 
                 </div>
