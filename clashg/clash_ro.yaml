@@ -46,9 +46,6 @@ dns:
     - 119.29.29.29
 sniffer:
   enable: true
-  force-dns-mapping: true
-  parse-pure-ip: true
-  override-destination: false
   sniff:
     HTTP:
       ports: [ 80, 8080-8880 ]
@@ -60,20 +57,18 @@ sniffer:
   skip-domain:
     - 'Mijia Cloud'
 
-# sub-store管理订阅
+# 订阅代理
 proxy-providers:
-  gfw-proxies:
+  warp-proxies:
     type: http
     path: ./gfw-proxies.yaml
-    url: "http://192.168.100.2:3001/get-my-subscribe/download/collection/all?target=ClashMeta"
-    interval: 43200
-    exclude-filter: "AI|ai"
-  openai-proxies:
+    url: "http://192.168.100.2:3001/get-my-subscribe/download/warp?target=ClashMeta"
+    interval: 600
+  zhs-proxies:
     type: http
     path: ./openai-proxies.yaml
-    url: "http://192.168.100.2:3001/get-my-subscribe/download/collection/all?target=ClashMeta"
+    url: "http://192.168.100.2:3001/get-my-subscribe/download/zhs?target=ClashMeta"
     interval: 43200
-    filter: "AI|ai"
 
 proxy-groups:
   - name: "\U0001F680 节点选择"
@@ -81,31 +76,31 @@ proxy-groups:
     proxies:
       - "♻️ 自动选择"
       - DIRECT
-    use:
-      - gfw-proxies
+    include-all-providers: true
+    exclude-filter: "(?i)ai"
   - name: "\U0001F4AC OpenAi"
     type: select
     proxies:
       - "♻️ 自动选择AI"
       - DIRECT
-    use:
-      - openai-proxies
+    url: https://chat.openai.com
+    expected-status: 200
+    interval: 300
+    include-all-providers: true
+    filter: "(?i)ai"
   - name: "♻️ 自动选择"
     type: url-test
     url: https://cp.cloudflare.com/generate_204
     interval: 300
-    use:
-      - gfw-proxies
+    include-all-providers: true
+    exclude-filter: "(?i)ai"
   - name: "♻️ 自动选择AI"
     type: url-test
-    url: https://cp.cloudflare.com/generate_204
+    url: https://chat.openai.com
+    expected-status: 200
     interval: 300
-    use:
-      - openai-proxies
-  - name: "\U0001F3AF 全球直连"
-    type: select
-    proxies:
-      - DIRECT
+    include-all-providers: true
+    filter: "(?i)ai"
 
 rule-providers:
   openai:
@@ -117,60 +112,6 @@ rule-providers:
     interval: 86400
 
 rules:
-  - "GEOIP,PRIVATE,\U0001F3AF 全球直连,no-resolve"
+  - "GEOIP,PRIVATE,DIRECT,no-resolve"
   - "RULE-SET,openai,\U0001F4AC OpenAi"
   - "MATCH,\U0001F680 节点选择"
-
-# 证书配置，用于https的external-controller-tls
-tls:
-  certificate: |-
-    -----BEGIN CERTIFICATE-----
-    MIIDbTCCAlWgAwIBAgIUZgcvmjvqU8MXVM87psikQA5fUMYwDQYJKoZIhvcNAQEL
-    BQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
-    GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAgFw0yMzA5MjgwNjEyMzNaGA8zMDIz
-    MDEyOTA2MTIzM1owRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx
-    ITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcN
-    AQEBBQADggEPADCCAQoCggEBAIcx2KrYe4QzVmuZ71PYKfPocqwtMTD7lQOHlDLX
-    XB12Zy9TXBgAAMQmqMzTaDhPCnBrfsRBOitdZ4/9ZzIOwoPFzZ7tgm/l95wfhnpW
-    ChwgXz06qmeT8FR2lSI6x1Tirh6TKmg432kAxQr858+NRFg+TbnecnjrkPOnS553
-    4zqrV65CSpHdWu1Z4X2RO4eNEAvaaHtRImpQLCguqUKHHlhEBfdu+B4hSkM91a+p
-    DKy+qXF8VglmR1DNWJ+Vkck3eDi5QG75vY+RhCX2Ge/xeavOI96Lp1mPiMUNe7EG
-    eN/CEPw5cq+/ZfQJa+mqTXcvi7qQORoZHeVj9e5P9FVhxBMCAwEAAaNTMFEwHQYD
-    VR0OBBYEFHCvWO3O/MHrYrJ4enrrPA7fAczaMB8GA1UdIwQYMBaAFHCvWO3O/MHr
-    YrJ4enrrPA7fAczaMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEB
-    AAyJCIw9MufShu75rY2ZMnEtCfUlOUmpMOcYdF+dE3HjJaCXTu7iRQW6kHzN3mkx
-    /JZdyQRCan+O8XYuMvpiL/R3qLLx3mp4NKinivXweJt5zNBzlaEajhuFbgfTR1+T
-    aJ9ru4v2OUuod1rFyHLBtQ1yCBIg8L1UsKZd1ChjptNNNWqIsjjHh1wCQ1fpk0+m
-    va189Ek1UdgpAdn2Rf/mVNfD3fmUuyVF6+xF3fFPmPmpQc3xuftDQP6DasBzA2d8
-    y1ChSz9INH7n1yLVwGncOiiPMFDP45YvynQ0oWljS54k4BShwzZ1G9qF5mo58aQd
-    n3DzNZzEIdOMjbdbtAnY4LE=
-    -----END CERTIFICATE-----
-  private-key: |-
-    -----BEGIN PRIVATE KEY-----
-    MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCHMdiq2HuEM1Zr
-    me9T2Cnz6HKsLTEw+5UDh5Qy11wddmcvU1wYAADEJqjM02g4Twpwa37EQTorXWeP
-    /WcyDsKDxc2e7YJv5fecH4Z6VgocIF89Oqpnk/BUdpUiOsdU4q4ekypoON9pAMUK
-    /OfPjURYPk253nJ465Dzp0ued+M6q1euQkqR3VrtWeF9kTuHjRAL2mh7USJqUCwo
-    LqlChx5YRAX3bvgeIUpDPdWvqQysvqlxfFYJZkdQzViflZHJN3g4uUBu+b2PkYQl
-    9hnv8XmrziPei6dZj4jFDXuxBnjfwhD8OXKvv2X0CWvpqk13L4u6kDkaGR3lY/Xu
-    T/RVYcQTAgMBAAECggEAD2D1M6ICkuxAFWdiWRhK1WsIuFs/sEG+FrOygQIMgXF5
-    lWGXJUfCzo1TQFGAFn+vQVCJEAwXcN1kLXX26jPRnqm+lSiRYOc4/nJ7mqj053Qr
-    QUzOG5Axk3oVxtoG2Loccm/tMAPgLhKfV3ujZvG754nWz6DlRqoNSBosuO8MUx0G
-    PUwe4ROjzpielVFoSOYeAlf4a2hHUFm3+NK9utvQJQMmM6F3C6Eek/T+1bw5FHfg
-    x7T22dbc/k5n43kZS5Ht54EHMxnU7eFGAA/eV20NZhQvb2Ie7PudJi18gD61bVLv
-    67oT/Wj0Ak3CDOjpf6g7AG0JAoj9cMhiYJF4DVj/6QKBgQC8V6gNwW6SLyhLB/Ta
-    OQzjAVT1mJMJWLFTktJCEU0SHNWhrwLnFjB4ubVzgNt4OuabdMndTQhWY8YLBoaO
-    4kENJjRIqjvZBi5kcxYZ0BfCwP+bJB+JmI5xA4XhLrxzVt8dK6wRbzPFMmVLjpw+
-    hJAek+ccOftQ1+iW/qmmSsM2VwKBgQC3wp8tJg6sGIaj42TmvSmk1dhruutVG1Zg
-    /sIhtAG7KbO3L4mcCJZlVM1YGKb0VLD3yKW/NPoE8J7WCEjHMokrHhgWf3GfuwAp
-    cIktPHnYUy2rvB7F+ptxmEz2g2pHDZh/Cboz1rakC06b9Fjerm8fYldV9lWAElRs
-    rGsd52typQKBgBghrxGcIBuw2RvL+C5hsun/CLCzDNvctlO78x6t8s8ITML7loaf
-    TDSbrskO0I/2FAgFDbxCG3heLkjJXEJAcQ9LPtW0ohhrd1Q9fq5uAC1e5yEsnrHV
-    jyKhzeyNPW4Vyl6FcvWE5wA0NdBZhGFqQMD6OFlggHfaQh3eoUQCPkLfAoGAbKbY
-    sztTZZJC2dh0KrIiU2JVyq0ExJebZVJ8uqzScTXhGykydl3lfxi7KaG55bHFyVyM
-    FBhg1Fbps6fGUHGjBSmQGI1WQ5mwKNBva53cdXoJAQgEMg9RpcLljsR5LHXvev3n
-    aQtFho1g93lsqo39ClN9TEiQmV89J9xyoYXZ1DkCgYBLkyL1yac9kuA8+qNEyuSI
-    TW6iuBBBnGM52vxaHDbs8oZ45cj4LVr/2y3xA4aIvAS6RjH5vU7/4e+0wzidD9/g
-    3XWHsk1JbhHlWj4scEOpb4o+i+FVSAR2S1pwMERwN6Z0jt5ILwWiVj3s9C26xnfG
-    zZMRN7Ec60tuSmq/Ym65IQ==
-    -----END PRIVATE KEY-----
