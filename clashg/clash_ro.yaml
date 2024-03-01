@@ -59,11 +59,6 @@ sniffer:
 
 # 订阅代理
 proxy-providers:
-  warp-proxies:
-    type: http
-    path: ./gfw-proxies.yaml
-    url: "http://192.168.100.2:3001/get-my-subscribe/download/warp?target=ClashMeta"
-    interval: 600
   zhs-proxies:
     type: http
     path: ./openai-proxies.yaml
