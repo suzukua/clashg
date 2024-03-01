@@ -78,29 +78,30 @@ proxy-groups:
       - DIRECT
     include-all-providers: true
     exclude-filter: "(?i)ai"
+  - name: "♻️ 自动选择"
+    type: url-test
+    include-all-providers: true
+    exclude-filter: "(?i)ai"
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+
   - name: "\U0001F4AC OpenAi"
     type: select
     proxies:
       - "♻️ 自动选择AI"
       - DIRECT
+    include-all-providers: true
+    filter: "(?i)ai"
     url: https://chat.openai.com
     expected-status: 200
     interval: 300
-    include-all-providers: true
-    filter: "(?i)ai"
-  - name: "♻️ 自动选择"
-    type: url-test
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    include-all-providers: true
-    exclude-filter: "(?i)ai"
   - name: "♻️ 自动选择AI"
     type: url-test
-    url: https://chat.openai.com
-    expected-status: 200
-    interval: 300
     include-all-providers: true
     filter: "(?i)ai"
+    url: https://chat.openai.com
+    expected-status: 200
+    interval: 30
 
 rule-providers:
   openai:
