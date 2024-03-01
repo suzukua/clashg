@@ -101,7 +101,7 @@ proxy-groups:
     filter: "(?i)ai"
     url: https://chat.openai.com
     expected-status: 200
-    interval: 30
+    interval: 300
 
 rule-providers:
   openai:
