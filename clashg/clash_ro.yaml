@@ -11,7 +11,7 @@ mode: rule
 geox-url:
   mmdb: "https://mirror.ghproxy.com/https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
 geo-auto-update: true # 是否自动更新 geodata
-geo-update-interval: 24 # 更新间隔，单位：小时
+geo-update-interval: 168 # 更新间隔，单位：小时
 log-level: error
 external-controller: 192.168.100.1:9093
 secret: clash
@@ -28,7 +28,6 @@ profile:
 
 dns:
   enable: true
-  #  perfer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
   ipv6: true
   listen: :23453
   #DNS模式(redir-host/fake-ip),【Meta专属】redir-host传递域名，可远程解析
@@ -86,16 +85,13 @@ proxy-groups:
       - DIRECT
     include-all-providers: true
     filter: "(?i)ai"
-    url: https://chat.openai.com
-    expected-status: 200
-    interval: 300
   - name: "♻️ 自动选择AI"
     type: url-test
     include-all-providers: true
     filter: "(?i)ai"
     url: https://chat.openai.com
     expected-status: 200
-    interval: 300
+    interval: 555
 
 rule-providers:
   openai:
