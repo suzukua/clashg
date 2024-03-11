@@ -310,11 +310,19 @@ apply() {
 }
 
 case $ACTION in
-start|start_nat)
+start)
   LOGGER "开始启动ClashG" >> $LOG_FILE
   apply
   LOGGER "启动ClashG完成" >> $LOG_FILE
 	;;
+start_nat)
+  LOGGER "网络变化处理ClashG相关配置" >> $LOG_FILE
+  set_lock
+  prepare_stop
+  prepare_start
+  unset_lock
+  LOGGER "网络变化处理ClashG相关配置完成" >> $LOG_FILE
+  ;;
 restart)
   LOGGER "开始重启ClashG" >> $LOG_FILE
   stop_clash
