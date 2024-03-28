@@ -29,11 +29,13 @@ jobs:
            
       - name: Get tags
         run: |
-          echo "CURRENTVERSION=$(git tag | sort -V | tail -n 1)" >> $GITHUB_ENV
           git fetch --tags
+          echo "CURRENTVERSION=$(git tag | sort -V | tail -n 1)" >> $GITHUB_ENV
           echo 1111               
           git tag | sort -V | tail -n 1
           echo "PREVERSION=$(git tag | sort -V | tail -n 2 | head -n 1)" >> $GITHUB_ENV
+          echo ${PREVERSION}...${CURRENTVERSION}
+          echo 2222
           
       - name: Generate release notes
         run: |
