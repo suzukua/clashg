@@ -31,15 +31,12 @@ jobs:
         run: |
           git fetch --tags
           echo "CURRENTVERSION=$(git tag | sort -V | tail -n 1)" >> $GITHUB_ENV
-          echo 1111               
-          git tag | sort -V | tail -n 1
           echo "PREVERSION=$(git tag | sort -V | tail -n 2 | head -n 1)" >> $GITHUB_ENV
-          echo ${PREVERSION}...${CURRENTVERSION}
-          echo 2222
-          
+
       - name: Generate release notes
         run: |
             echo "## What's Changed" > release.md
+            echo ${PREVERSION}...${CURRENTVERSION}
             git log --pretty=format:"* %h %s by @%an" -i ${PREVERSION}...${CURRENTVERSION} | sort -f | uniq >> release.md
             echo "" >> release.md
             cat release.md
