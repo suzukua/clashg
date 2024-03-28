@@ -37,7 +37,8 @@ jobs:
         run: |
             echo "## What's Changed" > release.md
             git log --pretty=format:"* %h %s by @%an" -i ${PREVERSION}...${CURRENTVERSION} | sort -f | uniq >> release.md
-            echo "" >> release.md  
+            echo "" >> release.md
+            cat release.md
             
       - name: Upload Release
         uses: softprops/action-gh-release@v1
