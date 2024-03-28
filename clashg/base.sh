@@ -30,7 +30,7 @@ tproxy_port=""
 inbound_tfo=""
 if [ -f $clash_file ]; then
   shadowsocksport=$(grep shadowsocks $clash_file  | awk -F'[:,]' '{for(i=1;i<=NF;i++){if($i~/port/)print $(i+1)}}'| tr -d ' ')
-  tproxy_port=$(cat $clash_file | awk -F: '/^tproxy-port/{print $2}' | xargs echo -n)
+  tproxy_port=$(grep tproxy $clash_file  | awk -F'[:,]' '{for(i=1;i<=NF;i++){if($i~/port/)print $(i+1)}}'| tr -d ' ')
   inbound_tfo=$(cat $clash_file | awk -F: '/^inbound-tfo/{print $2}' | xargs echo -n)
 fi
 

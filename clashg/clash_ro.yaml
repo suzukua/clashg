@@ -1,9 +1,8 @@
 inbound-tfo: true
-listeners:
-  - {"name": "go-home","type": "shadowsocks","port": 29999,"listen": "0.0.0.0","cipher": "aes-128-gcm","password": "password","udp": true}
 allow-lan: true
-tproxy: true
-tproxy-port: 23458
+listeners:
+  - {"name":"tproxy","type":"tproxy","port":23458,"listen":"0.0.0.0","udp":true}
+  - {"name":"go-home","type":"shadowsocks","port":29999,"listen":"0.0.0.0","cipher":"aes-128-gcm","password":"password","udp":true}
 # off, 不匹配进程，推荐在路由器上使用此模式
 find-process-mode: off
 mode: rule
@@ -103,6 +102,6 @@ rule-providers:
     interval: 86400
 
 rules:
-  - "GEOIP,PRIVATE,DIRECT,no-resolve"
+  - "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve"
   - "RULE-SET,openai,\U0001F4AC OpenAi"
   - "MATCH,\U0001F680 节点选择"
