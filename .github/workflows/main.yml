@@ -29,9 +29,10 @@ jobs:
            
       - name: Get tags
         run: |
+          echo "CURRENTVERSION=$(git tag | sort -V | tail -n 1)" >> $GITHUB_ENV
           git fetch --tags
           echo 1111               
-          git tag | sort -V | tail -n 2 | head -n 1
+          git tag | sort -V | tail -n 1
           echo "PREVERSION=$(git tag | sort -V | tail -n 2 | head -n 1)" >> $GITHUB_ENV
           
       - name: Generate release notes
@@ -48,3 +49,4 @@ jobs:
           tag: ${{ github.ref }}
           files: /home/runner/work/publish/*
           generate_release_notes: true
+          body_path: release.md
