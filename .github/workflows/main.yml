@@ -26,7 +26,11 @@ jobs:
            echo ~
            ls -lah ~/work/clashg/clashg.tar.gz
            mv ~/work/clashg/clashg.tar.gz /home/runner/work/publish/
-           
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Get tags
         run: |
           echo "CURRENTVERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
