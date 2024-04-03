@@ -100,8 +100,15 @@ rule-providers:
     path: ./openai-rules.yaml
     url: "https://gitlab.com/lodepuly/proxy_tool_resources/-/raw/master/rule/Clash/OpenAI/OpenAI_No_Resolve.yaml?ref_type=heads"
     interval: 86400
-
+  gemini:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./gemini-rules.yaml
+    url: "https://gitlab.com/lodepuly/proxy_tool_resources/-/raw/master/rule/Clash/Gemini/Gemini_No_Resolve.yaml?ref_type=heads"
+    interval: 86400
 rules:
   - "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve"
   - "RULE-SET,openai,\U0001F4AC OpenAi"
+  - "RULE-SET,gemini,\U0001F4AC OpenAi"
   - "MATCH,\U0001F680 节点选择"
