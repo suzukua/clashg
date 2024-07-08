@@ -286,18 +286,18 @@ apply() {
   fi
   set_lock
 	# now stop first
-  LOGGER ======================= ClashG ======================== >> $LOG_FILE
-  LOGGER ---------------------- 重启dnsmasq,清除iptables+ipset规则 -------------------------- >> $LOG_FILE
+  LOGGER "======================= ClashG ========================" >> $LOG_FILE
+  LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset规则 --------------------------" >> $LOG_FILE
   prepare_stop
   stop_clash
-  LOGGER --------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------ >> $LOG_FILE
+  LOGGER "--------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------" >> $LOG_FILE
   LOGGER "" >> $LOG_FILE
-  LOGGER ---------------------- 启动ClashG ------------------------ >> $LOG_FILE
+  LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
   start_clash
   LOGGER ""
-  LOGGER --------------------- 创建相关分流相关配置 开始------------------------ >> $LOG_FILE
+  LOGGER "--------------------- 创建相关分流相关配置 开始------------------------" >> $LOG_FILE
   prepare_start
-  LOGGER --------------------- 创建相关分流相关配置 结束------------------------ >> $LOG_FILE
+  LOGGER "--------------------- 创建相关分流相关配置 结束------------------------" >> $LOG_FILE
   auto_start
   LOGGER "" >> $LOG_FILE
 
