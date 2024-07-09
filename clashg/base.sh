@@ -17,10 +17,13 @@ remote_gfw_conf_lite='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/
 remote_proxy_cidr='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/ip-cidr.ipset'
 
 dnsmasq_gfw_ipset="dnsmasq_gfw"
+dnsmasq_gfw_ipset6="dnsmasq_gfw6"
 gfw_cidr_ipset="gfw_cidr"
+gfw_cidr_ipset6="gfw_cidr6"
 
 #mangle 表名字
 mangle_name=clashg
+mangle_name6=clashg6
 
 gfw_file=/tmp/clashg_gfw.conf
 ipcidr_file=/tmp/clashg_cidr_tmp.txt

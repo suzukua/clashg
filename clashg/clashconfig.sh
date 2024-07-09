@@ -37,6 +37,7 @@ add_nat(){
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
     modprobe -a "xt_TPROXY"  >/dev/null 2>&1
   fi
+  # IPV4
   ip rule add fwmark 10 table 100
   ip route add local 0.0.0.0/0 dev lo table 100
   iptables -t mangle -N "$mangle_name"
@@ -54,14 +55,29 @@ add_nat(){
   iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $dnsmasq_gfw_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p tcp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
   iptables -t mangle -A "$mangle_name" -p udp -m set --match-set $gfw_cidr_ipset dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
-
   iptables -t mangle -A PREROUTING -j "$mangle_name"
 
-  LOGGER "iptables 建立完成" >> $LOG_FILE
+  # IPV6
+  # 设置策略路由 v6
+  ip -6 rule add fwmark 10 table 100
+  ip -6 route add local ::/0 dev lo table 100
+  ip6tables -t mangle -N "$mangle_name6"
+  ip6tables -t mangle -F "$mangle_name6"
+  ip6tables -t mangle -A "$mangle_name6" -d ::1/128 -j RETURN
+  ip6tables -t mangle -A "$mangle_name6" -d fe80::/10 -j RETURN
+  ip6tables -t mangle -A "$mangle_name6" -d fd00::/8 -p tcp -j RETURN
+  ip6tables -t mangle -A "$mangle_name6" -p tcp -m set --match-set $dnsmasq_gfw_ipset6 dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  ip6tables -t mangle -A "$mangle_name6" -p udp -m set --match-set $dnsmasq_gfw_ipset6 dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  ip6tables -t mangle -A "$mangle_name6" -p tcp -m set --match-set $gfw_cidr_ipset6 dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  ip6tables -t mangle -A "$mangle_name6" -p udp -m set --match-set $gfw_cidr_ipset6 dst -j TPROXY --on-port $tproxy_port --tproxy-mark 10
+  ip6tables -t mangle -A PREROUTING -j "$mangle_name6"
+
+  LOGGER "iptables IPV4+IPV6 建立完成" >> $LOG_FILE
 }
 rm_nat(){
   LOGGER 删除iptables开始 >> $LOG_FILE
   #tproxy模式
+  #IPV4
   ip rule del fwmark 10 table 100 >/dev/null 2>&1
   ip route del local 0.0.0.0/0 dev lo table 100 >/dev/null 2>&1
   #删除
@@ -74,6 +90,20 @@ rm_nat(){
   iptables -t mangle -F "$mangle_name" >/dev/null 2>&1
   #删除
   iptables -t mangle -X "$mangle_name" >/dev/null 2>&1
+
+  #IPV6
+  ip -6 rule del fwmark 10 table 100 >/dev/null 2>&1
+  ip -6 route del local ::/0 dev lo table 100 >/dev/null 2>&1
+  #删除
+  ipset_indexs=$(ip6tables -t mangle -L PREROUTING --line-number | sed 1,2d | sed -n "/${mangle_name6}/=" | sort -r)
+  for ipset_index in $ipset_indexs; do
+    ip6tables -t mangle -D PREROUTING $ipset_index >/dev/null 2>&1
+  done
+  ip6tables -t mangle -D PREROUTING -j "$mangle_name6" >/dev/null 2>&1
+  #清空
+  ip6tables -t mangle -F "$mangle_name6" >/dev/null 2>&1
+  #删除
+  ip6tables -t mangle -X "$mangle_name6" >/dev/null 2>&1
 
   # 清理shadowsocksport端口
   if [ -n "$shadowsocksport" ]; then
@@ -91,13 +121,16 @@ rm_nat(){
 add_ipset(){
   #创建名为gfwlist，格式为iphash的集合
   ipset -N $dnsmasq_gfw_ipset hash:ip timeout 300
+  ipset -N $dnsmasq_gfw_ipset6 hash:ip family inet6 timeout 300
   add_cidr_proxy
   LOGGER "ipset 建立完成" >> $LOG_FILE
 }
 rm_ipset(){
   LOGGER 删除ipset开始 >> $LOG_FILE
   ipset -F $dnsmasq_gfw_ipset >/dev/null 2>&1 && ipset -X $dnsmasq_gfw_ipset >/dev/null 2>&1
+  ipset -F $dnsmasq_gfw_ipset6 >/dev/null 2>&1 && ipset -X $dnsmasq_gfw_ipset6 >/dev/null 2>&1
   ipset -F $gfw_cidr_ipset >/dev/null 2>&1 && ipset -X $gfw_cidr_ipset >/dev/null 2>&1
+  ipset -F $gfw_cidr_ipset6 >/dev/null 2>&1 && ipset -X $gfw_cidr_ipset6 >/dev/null 2>&1
   LOGGER 删除ipset结束 >> $LOG_FILE
 }
 #开始添加需要走代理的ip-cidr
