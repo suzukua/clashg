@@ -12,10 +12,13 @@ CURL_OPTS="-s -k"
 
 #DNS后置采用dnsmasq+gfw分流模式
 #分流出来的流量根据ipset重定向到clash redir-port
-remote_gfw_conf_full='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw.conf'
-remote_gfw_conf_lite='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw_lite.conf'
-remote_proxy_cidr='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/ip-cidr.ipset'
+#remote_gfw_conf_full='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw.conf'
+#remote_gfw_conf_lite='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw_lite.conf'
+#remote_proxy_cidr='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/ip-cidr.ipset'
 
+remote_gfw_conf_full='https://suzukua.github.io/gfwlist2dnsmasq/gfw.conf'
+remote_gfw_conf_lite='https://suzukua.github.io/gfwlist2dnsmasq/gfw_lite.conf'
+remote_proxy_cidr='https://suzukua.github.io/gfwlist2dnsmasq/ip-cidr.ipset'
 dnsmasq_gfw_ipset="dnsmasq_gfw"
 dnsmasq_gfw_ipset6="dnsmasq_gfw6"
 gfw_cidr_ipset="gfw_cidr"
@@ -53,8 +56,8 @@ get(){
 #如果是github资源则增加代理前缀
 get_direct_url(){
   origin_url=$1
-  if echo $origin_url | grep -E "^https://(raw.githubusercontent.com|github.com)"; then
-    origin_url="${github_proxy}${origin_url}"
-  fi
+#  if echo $origin_url | grep -E "^https://(raw.githubusercontent.com|github.com)"; then
+#    origin_url="${github_proxy}${origin_url}"
+#  fi
   echo "$origin_url"
 }
