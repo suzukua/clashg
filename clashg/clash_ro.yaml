@@ -76,6 +76,8 @@ proxy-groups:
     exclude-filter: "(?i)ai"
     url: https://cp.cloudflare.com/generate_204
     interval: 300
+    timeout: 3000
+    lazy: false
 
   - name: "\U0001F4AC OpenAi"
     type: select
@@ -88,9 +90,27 @@ proxy-groups:
     type: url-test
     include-all-providers: true
     filter: "(?i)ai"
-    url: https://chat.openai.com
-    expected-status: 200
+    url: https://chatgpt.com
+    expected-status: 200-399/500-599
     interval: 555
+    timeout: 3000
+    lazy: false
+
+  - name: "SELECT-IPV6"
+    type: select
+    proxies:
+      - "♻️ 自动选择v6"
+      - DIRECT
+    include-all-providers: true
+    filter: "(?i)v6"
+  - name: "♻️ 自动选择v6"
+    type: url-test
+    include-all-providers: true
+    filter: "(?i)v6"
+    url: https://cp.cloudflare.com/generate_204
+    interval: 666
+    timeout: 3000
+    lazy: false
 
 rule-providers:
   openai:
@@ -109,6 +129,10 @@ rule-providers:
     interval: 86400
 rules:
   - "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve"
+  - "IP-CIDR,182.139.0.0/16,DIRECT,no-resolve"
+  - "IP-CIDR6,fe80::/10,DIRECT,no-resolve"
+  - "IP-CIDR6,fd00::/8,DIRECT,no-resolve"
+  - "IP-CIDR6,::/0,SELECT-IPV6,no-resolve"
   - "RULE-SET,openai,\U0001F4AC OpenAi"
   - "RULE-SET,gemini,\U0001F4AC OpenAi"
   - "MATCH,\U0001F680 节点选择"
