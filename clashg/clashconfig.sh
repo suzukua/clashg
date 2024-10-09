@@ -148,9 +148,9 @@ download_res_if_need(){
   #强制下载，或者文件不存在时下载
   force_download=$1
   if [ -n "$force_download" ] || [ ! -f "$gfw_file" ]; then
-    remote_gfw_conf="$remote_gfw_conf_full"
-    if [ "$clashg_gfw_file" = "gfw_file_lite" ]; then
-        remote_gfw_conf="$remote_gfw_conf_lite"
+    remote_gfw_conf="$remote_gfw_conf_lite"
+    if [ "$clashg_gfw_file" = "gfw_file_full" ]; then
+        remote_gfw_conf="$remote_gfw_conf_full"
     fi
     #github增加代理
     local remote_gfw_url_tmp=$(get_direct_url "${remote_gfw_conf}")
@@ -313,7 +313,7 @@ enable_tfo(){
 
 apply() {
   if [ ! -f "$clash_file" ]; then
-    LOGGER "clash配置文件$clash_file不存在，请重新订阅！！！！！！！！" >> $LOG_FILE
+    LOGGER "clash配置文件$clash_file不存在，请编辑并保存配置文件！！！！！！！！" >> $LOG_FILE
     return 1
   fi
   set_lock

@@ -469,7 +469,7 @@
                 <div class="apply_gen FormTitle">
                     <div class="clash_top" style="padding-top: 20px;">
                         <div class="formfonttitle" ><b>Clash</b>版科学上网工具
-                            <img id="return_btn" onclick="reload_Soft_Center();" class="softcenterRetBtn" title="返回软件中心""></img>
+                            <img id="return_btn" onclick="reload_Soft_Center();" class="softcenterRetBtn" title="返回软件中心"></img>
                         </div>
                     </div>
                     <div class="clash_basic_info">
@@ -526,8 +526,8 @@
                             </th>
                             <td>
                                 <select id="clashg_gfw_file" class="input_option" style="width:67%">
-                                    <option value="gfw_file_full" checked>GFW全</option>
-                                    <option value="gfw_file_lite">GFW精简</option>
+                                    <option value="gfw_file_full">GFW全</option>
+                                    <option value="gfw_file_lite" selected>GFW精简</option>
                                 </select>
                                  <button type="button" class="button_gen" onclick="update_gfw_file()" href="javascript:void(0);">保存</button>
                             </td>
@@ -546,7 +546,7 @@
                                 <label title="定时更新,下一次重启clashg生效" class="hintstyle">定时更新gfw、ipcidr</label>
                             </th>
                             <td>
-                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_rule_cron" placeholder="29 7 * * * 清空则删除定时任务，记得点保存">
+                                <input style="width: 65%;" type="text" class="input_6_table" id="clashg_update_rule_cron" placeholder="15 7 * * 6 清空则删除定时任务，记得点保存">
                                 <button type="button" class="button_gen" onclick="update_cron('clashg_update_rule_cron')" href="javascript:void(0);">保存</button>
                             </td>
                         </tr>
