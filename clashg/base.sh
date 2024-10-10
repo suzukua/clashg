@@ -6,19 +6,15 @@ clash_ro_file="${clashg_dir}/clash_ro.yaml" #原厂配置
 clash_edit_file="${clashg_dir}/custom_clash_edit.yaml" #修改的配置
 clash_file="${clashg_dir}/clash.yaml" #程序运行时的配置
 
-github_proxy="https://mirror.ghproxy.com/"
+#github_proxy="https://mirror.ghproxy.com/"
 CURL_OPTS="-s -k"
 
 
 #DNS后置采用dnsmasq+gfw分流模式
-#分流出来的流量根据ipset重定向到clash redir-port
-#remote_gfw_conf_full='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw.conf'
-#remote_gfw_conf_lite='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/gfw_lite.conf'
-#remote_proxy_cidr='https://cdn.jsdelivr.net/gh/zhudan/gfwlist2dnsmasq@hidden/ip-cidr.ipset'
-
-remote_gfw_conf_full='https://suzukua.github.io/gfwlist2dnsmasq/gfw.conf'
-remote_gfw_conf_lite='https://suzukua.github.io/gfwlist2dnsmasq/gfw_lite.conf'
-remote_proxy_cidr='https://suzukua.github.io/gfwlist2dnsmasq/ip-cidr.ipset'
+#分流出来的流量根据ipset重定向到clash
+remote_gfw_conf_full='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/gfw.conf?ref_type=heads'
+remote_gfw_conf_lite='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/gfw_lite.conf?ref_type=heads'
+remote_proxy_cidr='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/ip-cidr.ipset?ref_type=heads'
 dnsmasq_gfw_ipset="dnsmasq_gfw"
 dnsmasq_gfw_ipset6="dnsmasq_gfw6"
 gfw_cidr_ipset="gfw_cidr"
