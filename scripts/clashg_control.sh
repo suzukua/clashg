@@ -1,4 +1,5 @@
 #!/bin/bash
+
 source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 

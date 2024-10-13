@@ -6,7 +6,7 @@ clash_ro_file="${clashg_dir}/clash_ro.yaml" #原厂配置
 clash_edit_file="${clashg_dir}/custom_clash_edit.yaml" #修改的配置
 clash_file="${clashg_dir}/clash.yaml" #程序运行时的配置
 
-#github_proxy="https://mirror.ghproxy.com/"
+# github_proxy="https://mirror.ghproxy.com/"
 CURL_OPTS="-s -k"
 
 
