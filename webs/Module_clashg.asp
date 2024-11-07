@@ -446,9 +446,9 @@
         }
         function open_clash_board(board_url){
             if(!board_url){
-                board_url = 'http://' + clash_bord_info.ip + ':' + clash_bord_info.port + '/ui/xd/';
+                board_url = 'http://' + clash_bord_info.ip + ':' + clash_bord_info.port + '/ui/xd/#/setup';
             }
-            window.open(board_url + '?hostname=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');        }
+            window.open(board_url + '?http=true&hostname=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');        }
     </script>
 </head>
 
