@@ -321,11 +321,13 @@ apply() {
   LOGGER "======================= ClashG ========================" >> $LOG_FILE
   LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset规则 --------------------------" >> $LOG_FILE
   prepare_stop
-  stop_clash
-  LOGGER "--------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------" >> $LOG_FILE
-  LOGGER "" >> $LOG_FILE
-  LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
-  start_clash
+  clash_process=$(pidof clash)
+  if [ -n "$clash_process" ]; then
+    LOGGER "--------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------" >> $LOG_FILE
+    LOGGER "" >> $LOG_FILE
+    LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
+    start_clash
+  fi
   LOGGER ""
   LOGGER "--------------------- 创建相关分流相关配置 开始------------------------" >> $LOG_FILE
   prepare_start
@@ -355,12 +357,6 @@ start_nat)
   unset_lock
   LOGGER "网络变化处理ClashG相关配置完成" >> $LOG_FILE
   ;;
-restart)
-  LOGGER "开始重启ClashG" >> $LOG_FILE
-  stop_clash
-  start_clash
-  LOGGER "重启ClashG完成" >> $LOG_FILE
-	;;
 stop)
   set_lock
   prepare_stop
