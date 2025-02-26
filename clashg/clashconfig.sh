@@ -319,14 +319,17 @@ apply() {
   set_lock
 	# now stop first
   LOGGER "======================= ClashG ========================" >> $LOG_FILE
-  LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset规则 --------------------------" >> $LOG_FILE
+  LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 --------------------------" >> $LOG_FILE
   prepare_stop
+  LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 结束 --------------------------" >> $LOG_FILE
   clash_process=$(pidof clash)
   if [ -n "$clash_process" ]; then
-    LOGGER "--------------------- 重启dnsmasq,清除iptables+ipset规则 结束------------------------" >> $LOG_FILE
     LOGGER "" >> $LOG_FILE
     LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
     start_clash
+    LOGGER "---------------------- 启动ClashG 结束 ------------------------" >> $LOG_FILE
+  else
+    LOGGER "---------------------- clash 进程已经存在(PID: $clash_process)，如需重启请执行关闭操作之后在执行开启操作 ------------------------" >> $LOG_FILE
   fi
   LOGGER ""
   LOGGER "--------------------- 创建相关分流相关配置 开始------------------------" >> $LOG_FILE
