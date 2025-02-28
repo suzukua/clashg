@@ -20,7 +20,7 @@ unset_lock() {
 }
 
 auto_start() {
-  LOGGER "判断是否创建开自启动"
+  LOGGER "创建开自启动脚本" >> $LOG_FILE
   [ ! -L "/koolshare/init.d/S99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/S99clashg.sh
   [ ! -L "/koolshare/init.d/N99clashg.sh" ] && ln -sf /koolshare/scripts/clashg_control.sh /koolshare/init.d/N99clashg.sh
 }
