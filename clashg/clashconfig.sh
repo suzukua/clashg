@@ -323,7 +323,7 @@ apply() {
   prepare_stop
   LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 结束 --------------------------" >> $LOG_FILE
   clash_process=$(pidof clash)
-  if [ -n "$clash_process" ]; then
+  if [ -z "$clash_process" ]; then
     LOGGER "" >> $LOG_FILE
     LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
     start_clash
