@@ -77,7 +77,6 @@ proxy-groups:
     type: select
     proxies:
       - "自动选择"
-      - "自动选择Serv00"
       - DIRECT
     use:
       - zhs-proxies
@@ -94,12 +93,6 @@ proxy-groups:
       - zhs-proxies
     max-failed-times: 2
 
-  - name: "自动选择Serv00"
-    type: url-test
-    use:
-      - zhs-proxies
-    filter: "(?i)serv00"
-    max-failed-times: 2
 
   - name: "SELECT-IPV6"
     type: url-test
