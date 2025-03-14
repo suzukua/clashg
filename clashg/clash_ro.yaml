@@ -63,56 +63,49 @@ proxy-providers:
     path: ./openai-proxies.yaml
     url: "http://192.168.100.2:3001/get-my-subscribe/download/zhs?target=ClashMeta"
     interval: 43200
+    override:
+      refresh-server-ip-interval: 60
+    health-check:
+      enable: true
+      lazy: false
+      url: https://www.gstatic.com/generate_204
+      interval: 180
+      timeout: 3000
 
 proxy-groups:
   - name: "\U0001F680 节点选择"
     type: select
     proxies:
-      - "♻️ 自动选择"
+      - "自动选择"
+      - "自动选择Serv00"
       - DIRECT
-    include-all-providers: true
-    exclude-filter: "(?i)ai"
-  - name: "♻️ 自动选择"
-    type: url-test
-    include-all-providers: true
-    exclude-filter: "(?i)ai"
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    timeout: 3000
-    lazy: false
+    use:
+      - zhs-proxies
 
   - name: "\U0001F4AC OpenAi"
-    type: select
-    proxies:
-      - "♻️ 自动选择AI"
-      - DIRECT
-    include-all-providers: true
-    filter: "(?i)ai"
-  - name: "♻️ 自动选择AI"
     type: url-test
-    include-all-providers: true
-    filter: "(?i)ai"
-    url: https://chatgpt.com
-    expected-status: 200
-    interval: 555
-    timeout: 3000
-    lazy: false
+    use:
+      - ai_proxies
+    max-failed-times: 1
+
+  - name: "自动选择"
+    type: url-test
+    use:
+      - zhs-proxies
+    max-failed-times: 2
+
+  - name: "自动选择Serv00"
+    type: url-test
+    use:
+      - zhs-proxies
+    filter: "(?i)serv00"
+    max-failed-times: 2
 
   - name: "SELECT-IPV6"
-    type: select
-    proxies:
-      - "♻️ 自动选择v6"
-      - DIRECT
-    include-all-providers: true
-    filter: "(?i)v6"
-  - name: "♻️ 自动选择v6"
     type: url-test
-    include-all-providers: true
+    use:
+      - zhs-proxies
     filter: "(?i)v6"
-    url: https://www.gstatic.com/generate_204
-    interval: 666
-    timeout: 3000
-    lazy: false
 
 rule-providers:
   openai:
