@@ -104,7 +104,7 @@
         var dbus = {};
         var _responseLen;
         var noChange = 0;
-        var $j = jQuery.noConflict();
+        var $j = $;
 
         var clash_bord_info = {}
 
