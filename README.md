@@ -4,7 +4,7 @@
 ## Features
 - 基于[mihomo(Clash.Meta)](https://github.com/MetaCubeX/mihomo) 实现
 - 支持局域网内TCP/UDP透明代理(TPROXY)
-- 支持Shadowsocks入站,UDP+TCP,IPV6+IPV4
+- 支持Shadowsocks入站,UDP+TCP,IPV6+IPV4（配置该协议后自动开通公网入站）
 - 入站支持TFO
 - 支持自定义规则地址
 - 支持自动更新geoip和gfw规则
