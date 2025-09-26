@@ -37,23 +37,23 @@ if [ -f $clash_file ]; then
 fi
 
 LOGGER() {
-    echo -e "【$(date +'%Y年%m月%d日 %H:%M:%S')】: $@"
+  echo -e "【$(date +'%Y年%m月%d日 %H:%M:%S')】: $@"
 }
 
 SYSLOG() {
-    logger -t "【$(date +'%Y年%m月%d日 %H:%M:%S')】:clashg" "$@"
+  logger -t "【$(date +'%Y年%m月%d日 %H:%M:%S')】:clashg" "$@"
 }
 
 get(){
-	a="$(echo $(dbus get $1))"
-	echo $a
+  a="$(echo $(dbus get $1))"
+  echo $a
 }
 
 #如果是github资源则增加代理前缀
 get_direct_url(){
   origin_url=$1
-#  if echo $origin_url | grep -E "^https://(raw.githubusercontent.com|github.com)"; then
-#    origin_url="${github_proxy}${origin_url}"
-#  fi
+  #  if echo $origin_url | grep -E "^https://(raw.githubusercontent.com|github.com)"; then
+  #    origin_url="${github_proxy}${origin_url}"
+  #  fi
   echo "$origin_url"
 }

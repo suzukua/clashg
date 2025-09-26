@@ -150,15 +150,15 @@ download_res_if_need(){
   if [ -n "$force_download" ] || [ ! -f "$gfw_file" ]; then
     remote_gfw_conf="$remote_gfw_conf_lite"
     if [ "$clashg_gfw_file" = "gfw_file_full" ]; then
-        remote_gfw_conf="$remote_gfw_conf_full"
+      remote_gfw_conf="$remote_gfw_conf_full"
     fi
     #github增加代理
     local remote_gfw_url_tmp=$(get_direct_url "${remote_gfw_conf}")
     LOGGER "开始下载dnsmasq gfwlist: ${gfw_file}.tmp 下载地址: ${remote_gfw_url_tmp}" >> $LOG_FILE
     curl ${CURL_OPTS} -o "${gfw_file}.tmp" "$remote_gfw_url_tmp"
     if [ -z "$(tail "${gfw_file}.tmp" | grep "$dnsmasq_gfw_ipset")" ]; then
-        LOGGER "${gfw_file}.tmp 下载失败" >> $LOG_FILE
-        return 1
+      LOGGER "${gfw_file}.tmp 下载失败" >> $LOG_FILE
+      return 1
     fi
     mv "${gfw_file}.tmp" ${gfw_file}
     LOGGER "dnsmasq gfwlist下载完成" >> $LOG_FILE
@@ -168,8 +168,8 @@ download_res_if_need(){
     LOGGER "开始下载ip-cidr: $ipcidr_file 下载地址: ${remote_proxy_url_tmp}" >> $LOG_FILE
     curl ${CURL_OPTS} -o "$ipcidr_file" "$remote_proxy_url_tmp"
     if [ -z "$(tail $ipcidr_file | grep "$gfw_cidr_ipset")" ]; then
-        LOGGER "$ipcidr_file 下载失败" >> $LOG_FILE
-        return 1
+      LOGGER "$ipcidr_file 下载失败" >> $LOG_FILE
+      return 1
     fi
     LOGGER "ip-cidr下载完成" >> $LOG_FILE
   fi
@@ -206,12 +206,12 @@ restart_dnsmasq(){
   LOGGER "重启前dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
   service restart_dnsmasq >/dev/null 2>&1
   sleep 1s
-#  usleep 500000 #500ms
+  #  usleep 500000 #500ms
   dnsmasqpid=$(pidof dnsmasq)
-#  procs=0
-#	for d in $dnsmasqpid; do
-#		procs=$(($procs+1))
-#	done
+  #  procs=0
+  #	for d in $dnsmasqpid; do
+  #		procs=$(($procs+1))
+  #	done
   LOGGER "重启后dnsmasq进程：$dnsmasqpid" >> $LOG_FILE
 }
 
@@ -317,7 +317,7 @@ apply() {
     return 1
   fi
   set_lock
-	# now stop first
+  # now stop first
   LOGGER "======================= ClashG ========================" >> $LOG_FILE
   LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 --------------------------" >> $LOG_FILE
   prepare_stop
@@ -351,7 +351,7 @@ start)
   LOGGER "开始启动ClashG" >> $LOG_FILE
   apply
   LOGGER "启动ClashG完成" >> $LOG_FILE
-	;;
+  ;;
 start_nat)
   LOGGER "网络变化处理ClashG相关配置" >> $LOG_FILE
   set_lock
@@ -368,7 +368,7 @@ stop)
   LOGGER "停止clashG" >> $LOG_FILE
   LOGGER
   unset_lock
-	;;
+  ;;
 update_dns_ipset_rule)
   set_lock
   LOGGER "更新规则开始下载资源" >> $LOG_FILE

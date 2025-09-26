@@ -17,7 +17,7 @@ response_json() {
 
 get_config_file(){
   if [ ! -f $clash_edit_file ]; then
-      cp $clash_ro_file $clash_edit_file
+    cp $clash_ro_file $clash_edit_file
   fi
   cat $clash_edit_file | base64_encode
 }
@@ -34,7 +34,7 @@ reset_config_file(){
 get_run_config_file(){
   local file_content="暂无运行配置，请先订阅"
   if [ -f $clash_file ]; then
-      file_content=$(cat $clash_file)
+    file_content=$(cat $clash_file)
   fi
   echo "$file_content" | base64_encode
 }
@@ -75,7 +75,9 @@ get_status(){
   else
     ipset_file_count=$(head -n 1 $ipcidr_file  | awk -F: '/^#\ Rows:/{print $2}' | xargs echo -n)
     rule_update=$(head -n 2 $ipcidr_file | tail -1  | awk -F 'on:' '/^#\ Updated\ on:/{print $2}' | xargs echo -n)
-    ipset_import_count=$(ipset list "$gfw_cidr_ipset" | grep -c "/")
+    ipsetv4_import_count=$(ipset list "$gfw_cidr_ipset" |grep "Number of entries" | awk '{print $4}')
+    ipsetv6_import_count=$(ipset list "$gfw_cidr_ipset6" |grep "Number of entries" | awk '{print $4}')
+    ipset_import_count=$((ipsetv4_import_count + ipsetv6_import_count))
     ipset_status="${ipset_status}状态:正常,ipset已导入${ipset_import_count}行,ipset文件${ipset_file_count}行($rule_update)"
   fi
   ipset_status="${ipset_status}\"}"
@@ -102,14 +104,14 @@ get_board_info(){
   if [ -f $clash_file ]; then
     external=$(grep "external-controller-tls:" $clash_file | awk -F': ' '{print $2}')
     if [ -z "$external" ]; then
-        external=$(grep "external-controller:" $clash_file | awk -F': ' '{print $2}')
+      external=$(grep "external-controller:" $clash_file | awk -F': ' '{print $2}')
     fi
     if [ -n "$external" ]; then
-        ip=$(echo "$external" | cut -d : -f 1)
-        port=$(echo "$external" | cut -d : -f 2)
-        secret="$(grep "secret:" $clash_file | awk -F': ' '{print $2}')"
-        echo "{\"ip\":\"$ip\",\"port\":\"$port\",\"secret\":\"$secret\"}"
-        return 0
+      ip=$(echo "$external" | cut -d : -f 1)
+      port=$(echo "$external" | cut -d : -f 2)
+      secret="$(grep "secret:" $clash_file | awk -F': ' '{print $2}')"
+      echo "{\"ip\":\"$ip\",\"port\":\"$port\",\"secret\":\"$secret\"}"
+      return 0
     fi
   fi
   echo "{}"
@@ -129,71 +131,71 @@ merge_run_yaml(){
 do_action() {
   ACTION="$2"
   case $ACTION in
-    start)
-      if [ "$clashg_enable" == "on" ]; then
-        echo > $LOG_FILE #重置日志
-        merge_run_yaml
-        sh $clashg_dir/clashconfig.sh start
-        ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-        [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
-      fi
+  start)
+    if [ "$clashg_enable" == "on" ]; then
+      echo > $LOG_FILE #重置日志
+      merge_run_yaml
+      sh $clashg_dir/clashconfig.sh start
+      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+      [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
+    fi
     ;;
-    stop)
-      if [ "$clashg_enable" != "on" ]; then
-        sh $clashg_dir/clashconfig.sh stop
-        ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-        response_json "$1" "$ret_data" "ok"
-      fi
+  stop)
+    if [ "$clashg_enable" != "on" ]; then
+      sh $clashg_dir/clashconfig.sh stop
+      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+      response_json "$1" "$ret_data" "ok"
+    fi
     ;;
-    start_nat)
-      if [ "$clashg_enable" == "on" ]; then
-        echo > $LOG_FILE #重置日志
-        sh $clashg_dir/clashconfig.sh start_nat
-        ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-        [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
-      fi
+  start_nat)
+    if [ "$clashg_enable" == "on" ]; then
+      echo > $LOG_FILE #重置日志
+      sh $clashg_dir/clashconfig.sh start_nat
+      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+      [ "$1" -ne "-1" ] && response_json "$1" "$ret_data" "ok"
+    fi
     ;;
-    get_config_file)
-      ret_data=$(get_config_file)
-      response_json "$1" "\"$ret_data\"" "ok"
+  get_config_file)
+    ret_data=$(get_config_file)
+    response_json "$1" "\"$ret_data\"" "ok"
     ;;
-    save_config_file)
-      save_config_file "$(get clashg_yaml_edit_content)"
-      #临时保存到dbus，保存完毕删除
-      dbus remove clashg_yaml_edit_content
-      response_json "$1" "\"\"" "ok"
+  save_config_file)
+    save_config_file "$(get clashg_yaml_edit_content)"
+    #临时保存到dbus，保存完毕删除
+    dbus remove clashg_yaml_edit_content
+    response_json "$1" "\"\"" "ok"
     ;;
-    reset_config_file)
-      reset_config_file
-      response_json "$1" "\"\"" "ok"
+  reset_config_file)
+    reset_config_file
+    response_json "$1" "\"\"" "ok"
     ;;
-    update_dns_ipset_rule)
+  update_dns_ipset_rule)
+    sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
+    ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+    response_json "$1" "$ret_data" "ok"
+    ;;
+  update_cron|set_mixed_port_status|save_clashg_gfw_file)
+    ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+    response_json "$1" "$ret_data" "ok"
+    ;;
+  update_rule)
+    if [ "$clashg_enable" == "on" ]; then
+      echo > $LOG_FILE #重置日志
+      LOGGER "定时更新规则开始"
+      #更新翻墙规则
       sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
-      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-      response_json "$1" "$ret_data" "ok"
+      sh $clashg_dir/clashconfig.sh out_restart_dnsmasq
+      LOGGER "定时更新规则结束"
+    fi
     ;;
-    update_cron|set_mixed_port_status|save_clashg_gfw_file)
-      ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
-      response_json "$1" "$ret_data" "ok"
+  get_status)
+    status_info=$(get_status)
+    board_info=$(get_board_info)
+    response_json "$1" "{\"status_info\":$status_info, \"board_info\":$board_info}" "ok"
     ;;
-    update_rule)
-      if [ "$clashg_enable" == "on" ]; then
-        echo > $LOG_FILE #重置日志
-        LOGGER "定时更新规则开始"
-        #更新翻墙规则
-        sh $clashg_dir/clashconfig.sh update_dns_ipset_rule
-        sh $clashg_dir/clashconfig.sh out_restart_dnsmasq
-        LOGGER "定时更新规则结束"
-      fi
-    ;;
-    get_status)
-      status_info=$(get_status)
-      board_info=$(get_board_info)
-      response_json "$1" "{\"status_info\":$status_info, \"board_info\":$board_info}" "ok"
-    ;;
-    get_run_config_file)
-      ret_data=$(get_run_config_file)
-      response_json "$1" "\"$ret_data\"" "ok"
+  get_run_config_file)
+    ret_data=$(get_run_config_file)
+    response_json "$1" "\"$ret_data\"" "ok"
     ;;
   esac
 }
