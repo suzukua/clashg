@@ -3,6 +3,7 @@ inbound-tfo: true
 unified-delay: true
 #TCP 并发
 tcp-concurrent: true
+keep-alive-interval: 90
 allow-lan: true
 listeners:
   - {"name":"tproxy","type":"tproxy","port":23458,"listen":"0.0.0.0","udp":true}
@@ -10,6 +11,7 @@ listeners:
 # off, 不匹配进程，推荐在路由器上使用此模式
 find-process-mode: off
 mode: rule
+ipv6: true
 #自定义 geodata url
 geox-url:
   mmdb: "https://mirror.ghproxy.com/https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
@@ -43,18 +45,9 @@ dns:
     - system
   nameserver:
     - system
-sniffer:
-  enable: true
-  sniff:
-    HTTP:
-      ports: [ 80, 8080-8880 ]
-      override-destination: true
-    TLS:
-      ports: [ 443, 8443 ]
-    QUIC:
-      ports: [ 443, 8443 ]
-  skip-domain:
-    - 'Mijia Cloud'
+  proxy-server-nameserver:
+    - tls://dns.google
+    - https://doh.pub/dns-query
 
 # 订阅代理
 proxy-providers:
