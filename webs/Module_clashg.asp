@@ -475,7 +475,7 @@
                     <div class="clash_basic_info">
                         <!--插件特点-->
                         <p style="color: rgb(229, 254, 2);">
-                            <b><a style="color: rgb(0, 255, 60);font-size: 16px;" href="#">ClashG特性</a></b>:dnsmasq分流国外，对国内域名毫无影响，国外域名借助Meta Clash的sniff国外解析<br/>
+                            <b><a style="color: rgb(0, 255, 60);font-size: 16px;" href="#">ClashG特性</a></b>:dnsmasq分流国外，即使本应用挂掉对国内访问毫无影响。可最大程度修改mihomo配置<br/>
                         </p>
                         <hr>
                     </div>
