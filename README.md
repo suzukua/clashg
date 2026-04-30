@@ -62,3 +62,6 @@ ClashG 是一个专为 ASUS AX86U 官改固件设计的网络代理工具，理�
 ---
 
 如有问题或建议，欢迎提交 [Issue](https://github.com/zhudan/clashg/issues)。
+
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/suzukua/clashg.svg?variant=adaptive)](https://github.com/suzukua/clashg)
