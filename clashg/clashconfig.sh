@@ -4,8 +4,9 @@ source /koolshare/scripts/base.sh
 source /koolshare/clashg/base.sh
 
 clashg_update_rule_cron_base64=$(get clashg_update_rule_cron)
-clashg_mixed_port_status=$(get clashg_mixed_port_status)
 clashg_gfw_file=$(get clashg_gfw_file)
+clashg_open_port=$(get clashg_open_port)
+clashg_open_proto=$(get clashg_open_proto)
 
 LOCK_FILE=/var/lock/clashg.lock
 
@@ -26,12 +27,18 @@ auto_start() {
 }
 
 add_nat(){
-  if [ "${clashg_mixed_port_status}" == "on" -a -n "$shadowsocksport" ]; then
-    LOGGER "开启Shadowsocks: ${shadowsocksport}公网访问" >> $LOG_FILE
-    iptables -I INPUT -p tcp --dport $shadowsocksport -j ACCEPT
-    iptables -I INPUT -p udp --dport $shadowsocksport -j ACCEPT
-    ip6tables -I INPUT -p tcp --dport $shadowsocksport -j ACCEPT
-    ip6tables -I INPUT -p udp --dport $shadowsocksport -j ACCEPT
+  if [ -n "$clashg_open_port" ] && [ "$clashg_open_port" != "0" ]; then
+    local proto="${clashg_open_proto:-both}"
+    LOGGER "开放公网访问: 端口 ${clashg_open_port} 协议 ${proto}" >> $LOG_FILE
+    if [ "$proto" = "tcp" ] || [ "$proto" = "both" ]; then
+      iptables -I INPUT -p tcp --dport $clashg_open_port -j ACCEPT
+      ip6tables -I INPUT -p tcp --dport $clashg_open_port -j ACCEPT
+    fi
+    if [ "$proto" = "udp" ] || [ "$proto" = "both" ]; then
+      iptables -I INPUT -p udp --dport $clashg_open_port -j ACCEPT
+      ip6tables -I INPUT -p udp --dport $clashg_open_port -j ACCEPT
+    fi
+    dbus set clashg_open_port_applied "$clashg_open_port"
   fi
   # tproxy模式
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then
@@ -105,17 +112,21 @@ rm_nat(){
   #删除
   ip6tables -t mangle -X "$mangle_name6" >/dev/null 2>&1
 
-  # 清理shadowsocksport端口
-  if [ -n "$shadowsocksport" ]; then
-    ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksport}/=" | sort -r)
+  # 清理公网访问端口规则
+  local applied_port=$(get clashg_open_port_applied)
+  for clean_port in "$clashg_open_port" "$applied_port"; do
+    if [ -z "$clean_port" ] || [ "$clean_port" = "0" ]; then
+      continue
+    fi
+    ipset_indexs=$(iptables -vnL INPUT --line-number | sed 1,2d | sed -n "/${clean_port}/=" | sort -r)
     for ipset_index in $ipset_indexs; do
       iptables -D INPUT $ipset_index >/dev/null 2>&1
     done
-    ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${shadowsocksport}/=" | sort -r)
+    ipset_indexs=$(ip6tables -vnL INPUT --line-number | sed 1,2d | sed -n "/${clean_port}/=" | sort -r)
     for ipset_index in $ipset_indexs; do
       ip6tables -D INPUT $ipset_index >/dev/null 2>&1
     done
-  fi
+  done
   LOGGER 删除iptables完成 >> $LOG_FILE
 }
 add_ipset(){

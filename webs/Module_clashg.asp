@@ -153,9 +153,10 @@
 
         function conf2obj() {
             E("clashg_enable").checked = (dbus["clashg_enable"] == 'on');
-            E("clashg_mixed_port_status").checked = (dbus["clashg_mixed_port_status"] == 'on');
             E("clashg_update_rule_cron").value = Base64.decode(dbus["clashg_update_rule_cron"] || "");
             E("clashg_gfw_file").value = dbus["clashg_gfw_file"];
+            E("clashg_open_port").value = dbus["clashg_open_port"] || "";
+            E("clashg_open_proto").value = dbus["clashg_open_proto"] || "both";
         }
 
         //提交任务方法,实时日志显示
@@ -336,14 +337,28 @@
             }
         }
 
-        function switch_mixed_port_mode(){
-            if (document.getElementById('clashg_mixed_port_status').checked) {
-                dbus["clashg_mixed_port_status"] = "on";
-            } else {
-                dbus["clashg_mixed_port_status"] = "off";
+        function apply_open_port() {
+            var port = document.getElementById('clashg_open_port').value.trim();
+            var proto = document.getElementById('clashg_open_proto').value;
+            if (!port || isNaN(port) || parseInt(port) <= 0 || parseInt(port) > 65535) {
+                show_result("请输入有效的端口号(1-65535)!", 2000);
+                return;
             }
-            apply_action("set_mixed_port_status", "2", null, {
-                "clashg_mixed_port_status": dbus["clashg_mixed_port_status"]
+            apply_action("apply_open_port", "2", function() {
+                show_result("公网访问规则已应用!");
+            }, {
+                "clashg_open_port": port,
+                "clashg_open_proto": proto
+            });
+        }
+
+        function clear_open_port() {
+            document.getElementById('clashg_open_port').value = '';
+            apply_action("apply_open_port", "2", function() {
+                show_result("公网访问规则已清除!");
+            }, {
+                "clashg_open_port": "",
+                "clashg_open_proto": ""
             });
         }
 
@@ -540,18 +555,19 @@
                         </tr>
                         <tr>
                             <th>
-                                <label title="默认关闭，开放Shadownsocks公网访问(IPV4/IPV6)">公网开放Shadownsocks</label>
+                                <label title="开放公网访问(IPV4/IPV6)">开放公网访问</label>
                             </th>
                             <td colspan="2">
-                                <div class="switch_field">
-                                    <label for="clashg_mixed_port_status">
-                                        <input id="clashg_mixed_port_status" onclick="switch_mixed_port_mode();" class="switch" type="checkbox" style="display: none;">
-                                        <div class="switch_container">
-                                            <div class="switch_bar"></div>
-                                            <div class="switch_circle transition_style"></div>
-                                        </div>
-                                    </label>
-                                </div>
+                                <input type="text" id="clashg_open_port" style="width:75px;" placeholder="端口" class="input_6_table" maxlength="5">
+                                &nbsp;
+                                <select id="clashg_open_proto" class="input_option" style="width:105px">
+                                    <option value="both">TCP+UDP</option>
+                                    <option value="tcp">TCP</option>
+                                    <option value="udp">UDP</option>
+                                </select>
+                                &nbsp;
+                                <button type="button" class="button_gen" onclick="apply_open_port()">应用</button>
+                                <button type="button" class="button_gen" onclick="clear_open_port()">清除</button>
                             </td>
                         </tr>
                     </table>

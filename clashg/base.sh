@@ -27,11 +27,9 @@ mangle_name6=clashg6
 gfw_file=/tmp/clashg_gfw.conf
 ipcidr_file=/tmp/clashg_cidr_tmp.txt
 
-shadowsocksport=""
 tproxy_port=""
 inbound_tfo=""
 if [ -f $clash_file ]; then
-  shadowsocksport=$(grep shadowsocks $clash_file  | awk -F'[:,]' '{for(i=1;i<=NF;i++){if($i~/port/)print $(i+1)}}'| tr -d ' ')
   tproxy_port=$(grep tproxy $clash_file  | awk -F'[:,]' '{for(i=1;i<=NF;i++){if($i~/port/)print $(i+1)}}'| tr -d ' ')
   inbound_tfo=$(cat $clash_file | awk -F: '/^inbound-tfo/{print $2}' | xargs echo -n)
 fi

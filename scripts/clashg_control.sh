@@ -39,6 +39,81 @@ get_run_config_file(){
   echo "$file_content" | base64_encode
 }
 
+normalize_open_proto(){
+  case "$1" in
+    tcp|udp|both)
+      echo "$1"
+      ;;
+    *)
+      echo "both"
+      ;;
+  esac
+}
+
+is_valid_open_port(){
+  local port="$1"
+  echo "$port" | grep -qE '^[0-9]+$' && [ "$port" -gt 0 ] && [ "$port" -le 65535 ]
+}
+
+delete_open_port_rules(){
+  local port="$1"
+  if [ -z "$port" ] || [ "$port" = "0" ]; then return 0; fi
+
+  while iptables -D INPUT -p tcp --dport "$port" -j ACCEPT >/dev/null 2>&1; do :; done
+  while iptables -D INPUT -p udp --dport "$port" -j ACCEPT >/dev/null 2>&1; do :; done
+  while ip6tables -D INPUT -p tcp --dport "$port" -j ACCEPT >/dev/null 2>&1; do :; done
+  while ip6tables -D INPUT -p udp --dport "$port" -j ACCEPT >/dev/null 2>&1; do :; done
+}
+
+add_open_port_rules(){
+  local port="$1"
+  local proto
+  proto=$(normalize_open_proto "$2")
+
+  if [ "$proto" = "tcp" ] || [ "$proto" = "both" ]; then
+    iptables -I INPUT -p tcp --dport "$port" -j ACCEPT
+    ip6tables -I INPUT -p tcp --dport "$port" -j ACCEPT
+  fi
+  if [ "$proto" = "udp" ] || [ "$proto" = "both" ]; then
+    iptables -I INPUT -p udp --dport "$port" -j ACCEPT
+    ip6tables -I INPUT -p udp --dport "$port" -j ACCEPT
+  fi
+}
+
+count_open_port_rules(){
+  local ip_cmd="$1"
+  local port="$2"
+  local count=0
+
+  $ip_cmd -C INPUT -p tcp --dport "$port" -j ACCEPT >/dev/null 2>&1 && count=$((count + 1))
+  $ip_cmd -C INPUT -p udp --dport "$port" -j ACCEPT >/dev/null 2>&1 && count=$((count + 1))
+  echo "$count"
+}
+
+apply_open_port_rules(){
+  local new_port
+  local new_proto
+  local old_port
+  local proto
+
+  new_port=$(get clashg_open_port)
+  new_proto=$(get clashg_open_proto)
+  old_port=$(get clashg_open_port_applied)
+  proto=$(normalize_open_proto "$new_proto")
+
+  delete_open_port_rules "$old_port"
+  [ "$new_port" != "$old_port" ] && delete_open_port_rules "$new_port"
+
+  if is_valid_open_port "$new_port"; then
+    LOGGER "开放公网访问: 端口 ${new_port} 协议 ${proto}" >> $LOG_FILE
+    add_open_port_rules "$new_port" "$proto"
+    dbus set clashg_open_port_applied "$new_port"
+  else
+    dbus remove clashg_open_port_applied >/dev/null 2>&1
+    LOGGER "公网访问端口已清除" >> $LOG_FILE
+  fi
+}
+
 get_status(){
   #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
   clash_status="{\"key\":\"Clash\",\"value\":\""
@@ -61,10 +136,12 @@ get_status(){
   else
     iptables_status="${iptables_status}状态:正常(${mangle_name}链已到mangle表添加)"
   fi
-  if [ -f "$clash_file" ]; then
-    it4_mixp_count=$(iptables -vnL INPUT --line-number |grep -c "$shadowsocksport")
-    it6_mixp_count=$(ip6tables -vnL INPUT --line-number |grep -c "$shadowsocksport")
-    iptables_status="${iptables_status}</br>Shadowsocks:(IPV4 ${it4_mixp_count}条,IPV6 ${it6_mixp_count}条)"
+  local open_port
+  open_port=$(get clashg_open_port)
+  if is_valid_open_port "$open_port"; then
+    it4_open_count=$(count_open_port_rules iptables "$open_port")
+    it6_open_count=$(count_open_port_rules ip6tables "$open_port")
+    iptables_status="${iptables_status}</br>公网开放(端口${open_port}):(IPV4 ${it4_open_count}条,IPV6 ${it6_open_count}条)"
   fi
   iptables_status="${iptables_status}\"}"
 
@@ -175,6 +252,11 @@ do_action() {
     response_json "$1" "$ret_data" "ok"
     ;;
   update_cron|set_mixed_port_status|save_clashg_gfw_file)
+    ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
+    response_json "$1" "$ret_data" "ok"
+    ;;
+  apply_open_port)
+    apply_open_port_rules
     ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
     response_json "$1" "$ret_data" "ok"
     ;;
