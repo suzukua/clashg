@@ -1,7 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<html xmlns:v>
-
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -15,6 +13,7 @@
     <link rel="stylesheet" type="text/css" href="usp_style.css" />
     <link rel="stylesheet" type="text/css" href="css/element.css">
     <link rel="stylesheet" type="text/css" href="res/softcenter.css">
+    <!-- 固件核心脚本保持同步加载，保证 state.js 等内部依赖与加载顺序不被破坏 -->
     <script language="JavaScript" type="text/javascript" src="/js/jquery.js"></script>
     <script language="JavaScript" type="text/javascript" src="/state.js"></script>
     <script language="JavaScript" type="text/javascript" src="/help.js"></script>
@@ -117,11 +116,14 @@
             tabtitle[tabtitle.length - 1] = new Array("", "MerlinClash", "__INHERIT__");
             tablink[tablink.length - 1] = new Array("", "Module_clashg.asp",  "NULL");
         }
+
+        // [优化2] async: false → async: true
+        // 同步 XHR 会完全阻塞浏览器主线程（包括 UI 渲染），是最严重的首屏卡顿根源
         function get_dbus_data() {
             $j.ajax({
                 type: "GET",
                 url: "/_api/clashg",
-                async: false,
+                async: true,
                 success: function(data) {
                     dbus = data.result[0];
                     conf2obj();
@@ -135,7 +137,6 @@
                     clash_bord_info = data.board_info
                 }
                 if(data && data.status_info){
-//                     #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
                     var trs = "";
                     var statusGroups=data.status_info
                     for(let i = 0; i < statusGroups.length; i++) {
@@ -183,15 +184,11 @@
                         if (response.status == "ok") {
                             if (flag && flag == "0") {
                                 // 查看执行过程日志
-                                // show_status();
                             } else if (flag && flag == "1") {
-                                // 页面刷新操作
                                 refreshpage(3);
                             } else if (flag && flag == "2") {
                                 // 什么也不做...
                             }
-                            // 动态获取数据模式: JSON数据保存在 response.data 变量中
-                            // data内部数据使用方式: resp_data.key1 , resp_data.key2 , resp_data.key3 ...
                             var resp_data = response.data;
                             if (callback) {
                                 setTimeout(function() {
@@ -199,17 +196,14 @@
                                 }, 1000);
                             }
                         } else if (flag && flag == "1") {
-                            // 页面刷新操作
                             refreshpage(3);
                         } else if (flag && flag == "2") {
-                            //continue;
                             if (callback) {
                                 setTimeout(function() {
                                     callback();
                                 }, 1000);
                             }
                         } else {
-                            // show_status();
                             if (callback) {
                                 setTimeout(function() {
                                     callback();
@@ -217,27 +211,27 @@
                             }
                         }
                     }
+                },
+                // [优化3] 补全 error 回调：网络失败时隐藏 loading 图标，否则会一直转
+                error: function() {
+                    $j("#loadingIcon").hide();
                 }
             });
         }
 
-        // function test_res() {
-        //     apply_action("test_res")
-        // }
-        // 显示动态结果消息
         function show_result(message, duration) {
             if (!duration) duration = 1000;
             $j('#copy_info').text(message);
             $j('#copy_info').fadeIn(100);
             $j('#copy_info').css('display', 'inline-block');
-            setTimeout(() => {
+            setTimeout(function() {
                 $j('#copy_info').fadeOut(1000);
             }, duration);
         }
 
         function show_status() {
             if(localStorage.getItem('clashg_actived_tab') != 'btn_log_tab'){
-                $j("#logMsg").show();//非日志tab才展示
+                $j("#logMsg").show();
             }
 
             $j.ajax({
@@ -260,40 +254,39 @@
                     }
                     if (_responseLen == response.length) {
                         noChange++;
+                    } else {
+                        // [优化4] 内容有变化时重置计数器
+                        // 原来缺少此行：一旦积累超过1000次无变化后轮询永久停止，
+                        // 即使之后日志继续输出也不会再刷新
+                        noChange = 0;
                     }
                     if (noChange <= 1000) {
-                        //重新加载
-                        setTimeout("show_status();", 500);
+                        // [优化5] setTimeout 传函数引用而非字符串
+                        // 字符串形式需要 eval 解析，性能较差
+                        setTimeout(show_status, 500);
                     }
                     _responseLen = response.length;
                 },
                 error: function() {
-                    setTimeout("show_status();", 500);
+                    // [同上优化5] 统一改为函数引用
+                    setTimeout(show_status, 500);
                 }
             });
         }
 
-
         function switch_tabs(evt, tab_id) {
-            // Declare all variables
             var i, tabcontent, tablinks;
-
-            // Get all elements with class="tabcontent" and hide them
             tabcontent = document.getElementsByClassName("FormTable");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-
-            // Get all elements with class="tablinks" and remove the class "active"
             tablinks = document.getElementsByClassName("tab");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
-
-            // Show the current tab, and add an "active" class to the button that opened the tab
             document.getElementById(tab_id).style.display = "inline-table";
             evt.currentTarget.className += " active";
-            $j("#logMsg").hide();//切换关闭日志窗口
+            $j("#logMsg").hide();
             localStorage.setItem('clashg_actived_tab', evt.currentTarget.id);
         }
 
@@ -302,12 +295,10 @@
         }
 
         /*********************主要功能逻辑模块实现**************/
-        // flag: 0:提交任务并查看日志，1:提交任务3秒后刷新页面, 2:提交任务后无特殊操作(可指定callback回调函数)
         function apply_action(action, flag, callback, ret_data) {
             if (!action) {
                 return;
             }
-            // 如果只需要某个参数，就没必要提交所有dbus数据，参数传递过多也是会有速度影响的。
             if (!ret_data) {
                 ret_data = dbus;
             }
@@ -321,12 +312,14 @@
         }
 
         function service_start() {
-            // 由于 start 需要先确保执行成功后再返回执行结果,因此先设置等待状态图片显示，然后再执行 start 操作。
             apply_action("start", "0", function(data) {
-                // 更新dbus数据中的 clashg_enable 状态 on/off
-                dbus = data;
-                conf2obj();
-                getStatus()
+                // [优化6] data 空值防护：接口异常时 data 可能为 null/undefined，
+                // 直接赋值给 dbus 再调用 conf2obj() 会报错
+                if (data) {
+                    dbus = data;
+                    conf2obj();
+                }
+                getStatus();
             }, {
                 "clashg_enable": dbus["clashg_enable"]
             });
@@ -342,6 +335,7 @@
                 service_stop();
             }
         }
+
         function switch_mixed_port_mode(){
             if (document.getElementById('clashg_mixed_port_status').checked) {
                 dbus["clashg_mixed_port_status"] = "on";
@@ -354,7 +348,6 @@
         }
 
         function update_dns_ipset_rule(){
-            // $j("#loadingIcon").show();
             apply_action("update_dns_ipset_rule", "0", null);
         }
         function update_gfw_file(){
@@ -363,49 +356,39 @@
                             "clashg_gfw_file": dbus["clashg_gfw_file"]
                         });
         }
-        // 恢复配置信息的压缩包文件
         function reset_config_file() {
             apply_action("reset_config_file", "2", function() {
                 show_result("重置配置文件成功!");
-                switch_edit_filecontent()//重新获取配置文件
+                switch_edit_filecontent()
             });
-            // 设置readonly属性为true
             $j("#clash_config_content").attr("readonly", true);
         }
 
-        // 保存config文件内容
         function save_config_content() {
             var content = $j("#clash_config_content").val();
             if (content == "") {
                 return false;
             }
             var base64_content = Base64.encode(content);
-            //临时保存到dbus，保存完毕删除
             apply_action("save_config_file", "2", function() {
                 show_result("保存文件内容成功!");
-                switch_edit_filecontent()//重新获取配置文件
+                switch_edit_filecontent()
             }, {"clashg_yaml_edit_content": base64_content});
-            // 设置readonly属性为true
             $j("#clash_config_content").attr("readonly", true);
         }
 
-        // 编辑config文件内容
         function edit_config_content() {
             $j("#clash_config_content").attr("readonly", false);
             $j("#clash_config_content").focus();
             show_result("开始编辑文件!")
         }
 
-
         function set_edit_content(data) {
-             // 解码base64格式的 data.clash_edit_filecontent
             var filecontent = Base64.decode(data);
             if (filecontent == "") {
-                // 文件内容为空
                 console.log("文件内容为空");
                 return false;
             }
-            // 设置当前textarea的内容为 file_content
             $j("#clash_config_content").val(filecontent);
             show_result("配置文件加载成功!", 1000);
         }
@@ -419,11 +402,9 @@
             apply_action("get_run_config_file", "2", function(data){
                 var filecontent = Base64.decode(data);
                 if (filecontent == "") {
-                    // 文件内容为空
                     console.log("文件内容为空");
                     return false;
                 }
-                // 设置当前textarea的内容为 file_content
                 $j("#clash_run_config_content").val(filecontent);
                 show_result("配置文件加载成功!", 1000);
             });
@@ -436,7 +417,6 @@
             } else {
                 dbus_tmp[cron_name] = ""
             }
-            // $j("#loadingIcon").show();
             apply_action("update_cron " + cron_name, "0", null, dbus_tmp);
         }
 
@@ -444,11 +424,19 @@
             evt.preventDefault();
             E("clashg_geoip_url").value=evt.target.getAttribute('href')
         }
+
+        // [优化7] 空值防护：getStatus() 未返回前 clash_bord_info 为空对象，
+        // clash_bord_info.ip 等字段均为 undefined，会打开无效 URL
         function open_clash_board(board_url){
+            if (!clash_bord_info || !clash_bord_info.ip || !clash_bord_info.port) {
+                show_result("面板信息尚未加载，请稍候...", 2000);
+                return;
+            }
             if(!board_url){
                 board_url = 'http://' + clash_bord_info.ip + ':' + clash_bord_info.port + '/ui/xd/#/setup';
             }
-            window.open(board_url + '?http=true&hostname=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');        }
+            window.open(board_url + '?http=true&hostname=' + clash_bord_info.ip + '&port=' + clash_bord_info.port + '&secret=' + clash_bord_info.secret, '_blank');
+        }
     </script>
 </head>
 
@@ -636,7 +624,6 @@
 
                 </div>
             </td>
-            <div class="author-info"></div>
         </tr>
     </table>
     <div id="footer"></div>
