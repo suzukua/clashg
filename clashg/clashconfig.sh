@@ -38,7 +38,7 @@ add_nat(){
       iptables -I INPUT -p udp --dport $clashg_open_port -j ACCEPT
       ip6tables -I INPUT -p udp --dport $clashg_open_port -j ACCEPT
     fi
-    dbus set clashg_open_port_applied "$clashg_open_port"
+    dbus set clashg_open_port_applied="$clashg_open_port"
   fi
   # tproxy模式
   if [ -z "$(lsmod |grep "xt_TPROXY")" ]; then

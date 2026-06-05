@@ -107,7 +107,7 @@ apply_open_port_rules(){
   if is_valid_open_port "$new_port"; then
     LOGGER "开放公网访问: 端口 ${new_port} 协议 ${proto}" >> $LOG_FILE
     add_open_port_rules "$new_port" "$proto"
-    dbus set clashg_open_port_applied "$new_port"
+    dbus set clashg_open_port_applied="$new_port"
   else
     dbus remove clashg_open_port_applied >/dev/null 2>&1
     LOGGER "公网访问端口已清除" >> $LOG_FILE
