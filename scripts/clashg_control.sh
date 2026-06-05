@@ -96,8 +96,8 @@ apply_open_port_rules(){
   local old_port
   local proto
 
-  new_port=$(get clashg_open_port)
-  new_proto=$(get clashg_open_proto)
+  new_port="${1:-$(get clashg_open_port)}"
+  new_proto="${2:-$(get clashg_open_proto)}"
   old_port=$(get clashg_open_port_applied)
   proto=$(normalize_open_proto "$new_proto")
 
@@ -107,8 +107,12 @@ apply_open_port_rules(){
   if is_valid_open_port "$new_port"; then
     LOGGER "开放公网访问: 端口 ${new_port} 协议 ${proto}" >> $LOG_FILE
     add_open_port_rules "$new_port" "$proto"
+    dbus set clashg_open_port="$new_port"
+    dbus set clashg_open_proto="$proto"
     dbus set clashg_open_port_applied="$new_port"
   else
+    dbus remove clashg_open_port >/dev/null 2>&1
+    dbus remove clashg_open_proto >/dev/null 2>&1
     dbus remove clashg_open_port_applied >/dev/null 2>&1
     LOGGER "公网访问端口已清除" >> $LOG_FILE
   fi
@@ -256,7 +260,7 @@ do_action() {
     response_json "$1" "$ret_data" "ok"
     ;;
   apply_open_port)
-    apply_open_port_rules
+    apply_open_port_rules "$3" "$4"
     ret_data="{$(dbus list clashg_ | awk '{sub("=", "\":\""); printf("\"%s\",", $0)}'|sed 's/,$//')}"
     response_json "$1" "$ret_data" "ok"
     ;;

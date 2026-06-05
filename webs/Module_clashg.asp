@@ -383,22 +383,24 @@
                 show_result("请输入有效的端口号(1-65535)!", 2000);
                 return;
             }
-            apply_action("apply_open_port", "2", function() {
+            apply_action("apply_open_port " + port + " " + proto, "2", function(data) {
+                if (data) {
+                    dbus = data;
+                    conf2obj();
+                }
                 show_result("公网访问规则已应用!");
-            }, {
-                "clashg_open_port": port,
-                "clashg_open_proto": proto
-            });
+            }, {});
         }
 
         function clear_open_port() {
             document.getElementById('clashg_open_port').value = '';
-            apply_action("apply_open_port", "2", function() {
+            apply_action("apply_open_port 0 both", "2", function(data) {
+                if (data) {
+                    dbus = data;
+                    conf2obj();
+                }
                 show_result("公网访问规则已清除!");
-            }, {
-                "clashg_open_port": "",
-                "clashg_open_proto": ""
-            });
+            }, {});
         }
 
         function update_dns_ipset_rule(){
