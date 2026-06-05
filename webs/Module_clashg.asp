@@ -203,7 +203,7 @@
         // flag: 0:提交任务并查看日志，1:提交任务3秒后刷新页面, 2:提交任务后无特殊操作(可指定callback回调函数)
         function post_dbus_data(script, arg, obj, flag, callback) {
             if(flag == 0){
-                setTimeout(show_status, 200);
+                setTimeout(show_log_panel, 200);
             }
             var id = parseInt(Math.random() * 100000000);
             var postData = {
@@ -304,6 +304,16 @@
                     setTimeout(show_status, 500);
                 }
             });
+        }
+
+        function show_log_panel() {
+            noChange = 0;
+            _responseLen = 0;
+            var logTab = E("btn_log_tab");
+            if (logTab) {
+                switch_tabs({ currentTarget: logTab }, "menu_log");
+            }
+            show_status();
         }
 
         function switch_tabs(evt, tab_id) {
