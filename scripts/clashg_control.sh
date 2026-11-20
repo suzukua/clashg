@@ -121,8 +121,8 @@ apply_open_port_rules(){
 get_status(){
   #[{key:"name1",value:"value"},{key:"name1",value:"value"}]
   clash_status="{\"key\":\"Clash\",\"value\":\""
-  clashpid="$(pidof clash)"
-  version=$($clashg_dir/clash -v | grep -o 'Mihomo Meta v[0-9]\+\.[0-9]\+\.[0-9]\+')
+  clashpid="$(pidof mihomo)"
+  version=$($clashg_dir/mihomo -v | grep -o 'Mihomo Meta v[0-9]\+\.[0-9]\+\.[0-9]\+')
   if [ -z "$clashpid" ]; then
     clash_status="${clash_status}启动状态:不正常($version)"
   else
@@ -173,8 +173,8 @@ get_status(){
   fi
   gfw_status="${gfw_status}\"}"
 
-  clash_tcp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep tcp -c)
-  clash_udp_count=$(netstat -anp |grep clash |grep  -v ":::\|LISTEN" |grep udp -c)
+  clash_tcp_count=$(netstat -anp |grep mihomo |grep  -v ":::\|LISTEN" |grep tcp -c)
+  clash_udp_count=$(netstat -anp |grep mihomo |grep  -v ":::\|LISTEN" |grep udp -c)
   netstat_status="{\"key\":\"NETSTAT连接数\",\"value\":\"TCP:${clash_tcp_count}条,UDP:${clash_udp_count}条\"}"
 
   echo "[$clash_status,$gfw_status,$ipset_status,$iptables_status,$netstat_status]"

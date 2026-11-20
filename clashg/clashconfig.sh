@@ -232,14 +232,14 @@ start_clash(){
     touch /tmp/cache.db 2>&1 &
     ln -s /tmp/cache.db $clashg_dir/cache.db
   fi
-  $clashg_dir/clash -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
+  $clashg_dir/mihomo -d $clashg_dir -f $clash_file 1> /tmp/clashg_run.log  2>&1 &
   LOGGER "启动Clash程序完毕，Clash启动日志位置：/tmp/clashg_run.log" >> $LOG_FILE
   #检查clash进程
   LOGGER "默认检查日志延迟时间:3秒" >> $LOG_FILE
   sleep 3s
 
-  if [ ! -z "$(pidof clash)" -a ! -z "$(netstat -anp | grep clash)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
-    LOGGER "Clash 进程启动成功！(PID: $(pidof clash))"
+  if [ ! -z "$(pidof mihomo)" -a ! -z "$(netstat -anp | grep mihomo)" -a ! -n "$(grep "Parse config error" /tmp/clashg_run.log)" ] ; then
+    LOGGER "Clash 进程启动成功！(PID: $(pidof mihomo))"
   else
     LOGGER "Clash 进程启动失败！请检查配置文件是否存在问题，即将退出" >> $LOG_FILE
     LOGGER "Clash 进程启动失败！请查看日志检查原因" >> $LOG_FILE
@@ -266,11 +266,11 @@ start_clash(){
 }
 
 stop_clash(){
-  clash_process=$(pidof clash)
-  if [ -n "$clash_process" ]; then
-    LOGGER "关闭Clash进程, pid:$clash_process" >> $LOG_FILE
-    killall clash >/dev/null 2>&1
-    kill -9 "$clash_process" >/dev/null 2>&1
+  mihomo_process=$(pidof mihomo)
+  if [ -n "$mihomo_process" ]; then
+    LOGGER "关闭Clash进程, pid:$mihomo_process" >> $LOG_FILE
+    killall mihomo >/dev/null 2>&1
+    kill -9 "$mihomo_process" >/dev/null 2>&1
   fi
 }
 
@@ -333,14 +333,14 @@ apply() {
   LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 --------------------------" >> $LOG_FILE
   prepare_stop
   LOGGER "---------------------- 重启dnsmasq,清除iptables+ipset+gfw规则 结束 --------------------------" >> $LOG_FILE
-  clash_process=$(pidof clash)
-  if [ -z "$clash_process" ]; then
+  mihomo_process=$(pidof mihomo)
+  if [ -z "$mihomo_process" ]; then
     LOGGER "" >> $LOG_FILE
     LOGGER "---------------------- 启动ClashG ------------------------" >> $LOG_FILE
     start_clash
     LOGGER "---------------------- 启动ClashG 结束 ------------------------" >> $LOG_FILE
   else
-    LOGGER "---------------------- clash 进程已经存在(PID: $clash_process)，如需重启请执行关闭操作之后在执行开启操作 ------------------------" >> $LOG_FILE
+    LOGGER "---------------------- mihomo 进程已经存在(PID: $mihomo_process)，如需重启请执行关闭操作之后在执行开启操作 ------------------------" >> $LOG_FILE
   fi
   LOGGER ""
   LOGGER "--------------------- 创建相关分流相关配置 开始------------------------" >> $LOG_FILE

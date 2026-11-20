@@ -11,7 +11,7 @@ CURL_OPTS="-s -k"
 
 
 #DNS后置采用dnsmasq+gfw分流模式
-#分流出来的流量根据ipset重定向到clash
+#分流出来的流量根据ipset重定向到mihomo
 remote_gfw_conf_full='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/gfw.conf?ref_type=heads'
 remote_gfw_conf_lite='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/gfw_lite.conf?ref_type=heads'
 remote_proxy_cidr='https://gitlab.com/suzukua/gfwlist2dnsmasq/-/raw/main/ip-cidr.ipset?ref_type=heads'

@@ -183,7 +183,7 @@ copy_files() {
 
   LOGGER 复制相关的脚本文件！
   cp -rf ./${app_name}/ /koolshare/
-  chmod +x /koolshare/${app_name}/clash
+  chmod +x /koolshare/${app_name}/mihomo
   chmod +x /koolshare/${app_name}/*.sh
 
   cp -f ./scripts/${app_name}_*.sh /koolshare/scripts/
